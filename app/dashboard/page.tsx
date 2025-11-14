@@ -7,7 +7,7 @@ import WelcomeHeader from '@/app/ui/dashboard/welcome-header';
 
 export default async function Page() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100">
       <div className="p-6 md:p-8">
         {/* Header de bienvenue moderne */}
         <WelcomeHeader />

@@ -7,9 +7,9 @@ export default function WelcomeHeader() {
   
   return (
     <div className="mb-8">
-      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 rounded-3xl p-8 shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-8 shadow-2xl">
         {/* Effet de background */}
-        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute inset-0 bg-black/5"></div>
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
         
@@ -25,11 +25,11 @@ export default function WelcomeHeader() {
                 {timeOfDay} ! 👋
               </h1>
               
-              <p className="text-blue-100 text-xl mb-4">
-                Prêt à conquérir vos habitudes aujourd'hui ?
+              <p className="text-pink-100 text-xl mb-4">
+                Prêt à conquérir vos habitudes aujourd&apos;hui ?
               </p>
               
-              <div className="flex items-center gap-2 text-blue-200">
+              <div className="flex items-center gap-2 text-pink-100">
                 <CalendarIcon className="w-5 h-5" />
                 <span className="text-sm">
                   {currentDate.toLocaleDateString('fr-FR', { 
@@ -45,8 +45,8 @@ export default function WelcomeHeader() {
             {/* Badge de streak */}
             <div className="bg-white/20 backdrop-blur rounded-2xl p-4 text-center">
               <div className="text-3xl font-bold text-white">7</div>
-              <div className="text-blue-200 text-sm">jours de suite</div>
-              <div className="text-yellow-300 text-xs">🔥 En feu !</div>
+              <div className="text-pink-100 text-sm">jours de suite</div>
+              <div className="text-yellow-300 text-xs">🔥 En feu&nbsp;!</div>
             </div>
           </div>
         </div>

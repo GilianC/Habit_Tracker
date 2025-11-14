@@ -19,8 +19,8 @@ export default function CreateActivityForm() {
   ];
 
   const colorOptions = [
-    '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', 
-    '#EF4444', '#EC4899', '#6B7280', '#059669'
+    '#EC4899', '#F472B6', '#E91E63', '#DB2777', 
+    '#EC4899', '#F472B6', '#D946EF', '#F0ABFC'
   ];
 
   const iconOptions = ['✅', '🏃‍♂️', '📚', '💧', '🥗', '🧘‍♀️', '💊', '🎯', '🎵', '🏠'];
@@ -48,7 +48,7 @@ export default function CreateActivityForm() {
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({...formData, name: e.target.value})}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
             placeholder="Ex: Boire 2L d'eau"
             required
           />
@@ -63,7 +63,7 @@ export default function CreateActivityForm() {
             id="frequency"
             value={formData.frequency}
             onChange={(e) => setFormData({...formData, frequency: e.target.value})}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
           >
             {frequencyOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -106,7 +106,7 @@ export default function CreateActivityForm() {
                 onClick={() => setFormData({...formData, icon})}
                 className={`p-2 text-2xl border rounded-md ${
                   formData.icon === icon 
-                    ? 'border-green-500 bg-green-50' 
+                    ? 'border-pink-500 bg-pink-50' 
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
@@ -141,7 +141,7 @@ export default function CreateActivityForm() {
         <div className="flex gap-4">
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+            className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-md hover:shadow-lg hover:scale-105 transition-all"
           >
             <CheckCircleIcon className="w-5 h-5" />
             <span>Créer l'activité</span>
@@ -158,8 +158,8 @@ export default function CreateActivityForm() {
       </div>
 
       {/* Message informatif */}
-      <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
-        <p className="text-sm text-blue-800">
+      <div className="rounded-lg bg-pink-50 p-4 border border-pink-200">
+        <p className="text-sm text-pink-800">
           <strong>Information :</strong> Cette fonctionnalité sera pleinement opérationnelle une fois la base de données configurée.
         </p>
       </div>

@@ -1,0 +1,190 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+// Table des utilisateurs
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  role          String    @default("user")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  lastLogin     DateTime  @default(now()) @map("last_login")
+
+  // Relations
+  activities        Activity[]
+  challengesAsChallenger Challenge[] @relation("ChallengerChallenges")
+  challengesAsFriend     Challenge[] @relation("FriendChallenges")
+  userBadges        UserBadge[]
+  eventsCreated     Event[]      @relation("EventCreator")
+  userEvents        UserEvent[]
+  motivationsSent   Motivation[] @relation("SentMotivations")
+  motivationsReceived Motivation[] @relation("ReceivedMotivations")
+  userConnections   UserConnection[]
+
+  @@map("users")
+}
+
+// Table des activités (habitudes)
+model Activity {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  name      String
+  frequency String   @default("daily")
+  color     String   @default("#3B82F6")
+  icon      String   @default("✅")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityLogs ActivityLog[]
+  challenges   Challenge[]
+
+  @@index([userId])
+  @@map("activities")
+}
+
+// Table des logs d'activités (validation quotidienne)
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  activityId Int      @map("activity_id")
+  date       DateTime @db.Date
+  isDone     Boolean  @default(false) @map("is_done")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([activityId, date])
+  @@index([activityId])
+  @@index([date])
+  @@map("activity_logs")
+}
+
+// Table des défis
+model Challenge {
+  id             Int       @id @default(autoincrement())
+  challengerId   Int       @map("challenger_id")
+  friendId       Int       @map("friend_id")
+  activityId     Int       @map("activity_id")
+  status         String    @default("pending")
+  startDate      DateTime? @map("start_date") @db.Date
+  endDate        DateTime? @map("end_date") @db.Date
+  challengerScore Int      @default(0) @map("challenger_score")
+  friendScore    Int      @default(0) @map("friend_score")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  challenger User     @relation("ChallengerChallenges", fields: [challengerId], references: [id], onDelete: Cascade)
+  friend     User     @relation("FriendChallenges", fields: [friendId], references: [id], onDelete: Cascade)
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([challengerId])
+  @@index([friendId])
+  @@map("challenges")
+}
+
+// Table des badges
+model Badge {
+  id             Int      @id @default(autoincrement())
+  title          String
+  description    String?
+  conditionType  String   @map("condition_type")
+  conditionValue Int      @map("condition_value")
+  icon           String   @default("🏆")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+// Table des badges utilisateurs
+model UserBadge {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @map("user_id")
+  badgeId  Int      @map("badge_id")
+  earnedAt DateTime @default(now()) @map("earned_at")
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@map("user_badges")
+}
+
+// Table des événements
+model Event {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  startDate   DateTime @map("start_date") @db.Date
+  endDate     DateTime @map("end_date") @db.Date
+  createdBy   Int?     @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  creator    User?       @relation("EventCreator", fields: [createdBy], references: [id])
+  userEvents UserEvent[]
+
+  @@map("events")
+}
+
+// Table de participation aux événements
+model UserEvent {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @map("user_id")
+  eventId  Int      @map("event_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@map("user_events")
+}
+
+// Table des motivations entre amis
+model Motivation {
+  id         Int      @id @default(autoincrement())
+  senderId   Int      @map("sender_id")
+  receiverId Int      @map("receiver_id")
+  emoji      String
+  comment    String?
+  date       DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  sender   User @relation("SentMotivations", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMotivations", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@map("motivations")
+}
+
+// Table des connexions utilisateurs
+model UserConnection {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  lastLogin        DateTime @default(now()) @map("last_login")
+  streakConnexions Int      @default(1) @map("streak_connexions")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_connections")
+}

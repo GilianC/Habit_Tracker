@@ -10,8 +10,8 @@ const stats = [
     change: '+12%',
     trending: 'up',
     icon: '✅',
-    gradient: 'from-emerald-500 to-teal-500',
-    bgGradient: 'from-emerald-50 to-teal-50',
+    gradient: 'from-pink-500 to-rose-500',
+    bgGradient: 'from-pink-50 to-rose-50',
     description: 'Cette semaine'
   },
   {
@@ -22,8 +22,8 @@ const stats = [
     change: '+3',
     trending: 'up',
     icon: '🔥',
-    gradient: 'from-orange-500 to-red-500',
-    bgGradient: 'from-orange-50 to-red-50',
+    gradient: 'from-rose-500 to-pink-600',
+    bgGradient: 'from-rose-50 to-pink-100',
     description: 'Méditation matinale'
   },
   {
@@ -34,8 +34,8 @@ const stats = [
     change: '+5%',
     trending: 'up',
     icon: '📈',
-    gradient: 'from-blue-500 to-purple-500',
-    bgGradient: 'from-blue-50 to-purple-50',
+    gradient: 'from-fuchsia-500 to-pink-500',
+    bgGradient: 'from-fuchsia-50 to-pink-50',
     description: 'Moyenne mensuelle'
   },
   {
@@ -46,8 +46,8 @@ const stats = [
     change: '-2',
     trending: 'down',
     icon: '🗓️',
-    gradient: 'from-purple-500 to-pink-500',
-    bgGradient: 'from-purple-50 to-pink-50',
+    gradient: 'from-pink-600 to-rose-600',
+    bgGradient: 'from-pink-50 to-rose-50',
     description: 'Record actuel'
   },
 ];
@@ -82,7 +82,7 @@ export default function ModernStatsOverview() {
                 <div className="text-3xl">{stat.icon}</div>
                 <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                   stat.trending === 'up' 
-                    ? 'bg-emerald-100 text-emerald-700' 
+                    ? 'bg-pink-100 text-pink-700' 
                     : 'bg-red-100 text-red-700'
                 }`}>
                   {stat.trending === 'up' ? (
@@ -126,7 +126,7 @@ export default function ModernStatsOverview() {
               {/* Barre de progression */}
               <div className="relative w-full bg-gray-200 rounded-full h-32 mb-3 overflow-hidden">
                 <div 
-                  className="absolute bottom-0 w-full bg-gradient-to-t from-emerald-500 to-teal-400 rounded-full transition-all duration-1000 ease-out"
+                  className="absolute bottom-0 w-full bg-gradient-to-t from-pink-500 to-rose-400 rounded-full transition-all duration-1000 ease-out"
                   style={{ height: `${day.percentage}%` }}
                 >
                   <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
@@ -150,7 +150,7 @@ export default function ModernStatsOverview() {
         {/* Légende */}
         <div className="mt-6 flex items-center justify-center gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"></div>
+            <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-400 rounded-full"></div>
             Habitudes complétées
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function ModernStatsOverview() {
         {/* Meilleure catégorie */}
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-2xl shadow-md">
               🏆
             </div>
             <div>
@@ -170,16 +170,16 @@ export default function ModernStatsOverview() {
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4">
-            <div className="text-2xl font-bold text-orange-700 mb-1">Bien-être</div>
-            <div className="text-orange-600">94% de réussite cette semaine</div>
+          <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4">
+            <div className="text-2xl font-bold text-rose-700 mb-1">Bien-être</div>
+            <div className="text-rose-600">94% de réussite cette semaine</div>
           </div>
         </div>
 
         {/* Zone d'amélioration */}
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 bg-gradient-to-br from-fuchsia-400 to-pink-500 rounded-xl flex items-center justify-center text-2xl shadow-md">
               💪
             </div>
             <div>
@@ -188,9 +188,9 @@ export default function ModernStatsOverview() {
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
-            <div className="text-2xl font-bold text-purple-700 mb-1">Sport</div>
-            <div className="text-purple-600">58% de réussite - On peut faire mieux !</div>
+          <div className="bg-gradient-to-r from-fuchsia-50 to-pink-50 rounded-xl p-4">
+            <div className="text-2xl font-bold text-fuchsia-700 mb-1">Sport</div>
+            <div className="text-fuchsia-600">58% de réussite - On peut faire mieux !</div>
           </div>
         </div>
       </div>

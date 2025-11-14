@@ -26,7 +26,7 @@ const links = [
     href: '/dashboard', 
     icon: HomeIcon,
     iconSolid: HomeIconSolid,
-    color: 'blue',
+    color: 'pink',
     description: 'Vue d\'ensemble'
   },
   {
@@ -34,7 +34,7 @@ const links = [
     href: '/dashboard/activities',
     icon: CheckCircleIcon,
     iconSolid: CheckCircleIconSolid,
-    color: 'emerald',
+    color: 'rose',
     description: 'Gérer mes routines'
   },
   { 
@@ -42,7 +42,7 @@ const links = [
     href: '/dashboard/profile', 
     icon: ChartBarIcon,
     iconSolid: ChartBarIconSolid,
-    color: 'violet',
+    color: 'fuchsia',
     description: 'Progrès et stats'
   },
   { 
@@ -50,7 +50,7 @@ const links = [
     href: '/dashboard/challenges', 
     icon: UserGroupIcon,
     iconSolid: UserGroupIconSolid,
-    color: 'orange',
+    color: 'pink',
     description: 'Défis et amis'
   },
   { 
@@ -58,7 +58,7 @@ const links = [
     href: '/dashboard/badges', 
     icon: SparklesIcon,
     iconSolid: SparklesIconSolid,
-    color: 'yellow',
+    color: 'rose',
     description: 'Mes achievements'
   },
   { 
@@ -66,18 +66,16 @@ const links = [
     href: '/dashboard/settings', 
     icon: Cog6ToothIcon,
     iconSolid: Cog6ToothIconSolid,
-    color: 'slate',
+    color: 'gray',
     description: 'Configuration'
   },
 ];
 
 const colorClasses = {
-  blue: 'from-blue-500 to-cyan-500',
-  emerald: 'from-emerald-500 to-teal-500', 
-  violet: 'from-violet-500 to-purple-500',
-  orange: 'from-orange-500 to-pink-500',
-  yellow: 'from-yellow-500 to-orange-500',
-  slate: 'from-slate-500 to-gray-500'
+  pink: 'from-pink-500 to-rose-500',
+  rose: 'from-rose-500 to-pink-600', 
+  fuchsia: 'from-fuchsia-500 to-pink-500',
+  gray: 'from-gray-400 to-gray-500'
 };
 
 export default function NavLinks() {
@@ -96,16 +94,16 @@ export default function NavLinks() {
             className={clsx(
               'group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
               {
-                'bg-white/10 text-white shadow-lg': isActive,
-                'text-slate-300 hover:text-white hover:bg-white/5': !isActive,
+                'bg-pink-100 text-gray-800 shadow-md': isActive,
+                'text-gray-600 hover:text-gray-800 hover:bg-pink-50': !isActive,
               }
             )}
           >
             <div className={clsx(
               'flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200',
               {
-                [`bg-gradient-to-br ${colorClasses[link.color as keyof typeof colorClasses]} shadow-lg`]: isActive,
-                'bg-slate-700 group-hover:bg-slate-600': !isActive,
+                [`bg-gradient-to-br ${colorClasses[link.color as keyof typeof colorClasses]} shadow-md`]: isActive,
+                'bg-gray-200 group-hover:bg-gray-300': !isActive,
               }
             )}>
               <Icon className="h-4 w-4 text-white" />
@@ -115,19 +113,19 @@ export default function NavLinks() {
               <p className={clsx(
                 'transition-colors',
                 {
-                  'text-white font-semibold': isActive,
-                  'text-slate-300 group-hover:text-white': !isActive,
+                  'text-gray-800 font-semibold': isActive,
+                  'text-gray-600 group-hover:text-gray-800': !isActive,
                 }
               )}>
                 {link.name}
               </p>
-              <p className="text-xs text-slate-400 group-hover:text-slate-300">
+              <p className="text-xs text-gray-500 group-hover:text-gray-600">
                 {link.description}
               </p>
             </div>
             
             {isActive && (
-              <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+              <div className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
             )}
           </Link>
         );

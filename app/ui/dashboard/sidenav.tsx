@@ -6,19 +6,19 @@ import { signOut } from '@/auth';
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col bg-slate-900 text-white shadow-2xl">
+    <div className="flex h-full flex-col bg-white border-r border-pink-200 shadow-lg">
       {/* Header avec logo */}
       <div className="px-6 py-8">
         <Link
           className="flex items-center gap-3 group"
           href="/"
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-md">
             <span className="text-white font-bold text-lg">H</span>
           </div>
           <div className="hidden md:block">
-            <h1 className="text-xl font-bold text-white">HabitFlow</h1>
-            <p className="text-slate-400 text-sm">Suivi d'habitudes</p>
+            <h1 className="text-xl font-bold text-gray-800">HabitFlow</h1>
+            <p className="text-gray-500 text-sm">Suivi d'habitudes</p>
           </div>
         </Link>
       </div>
@@ -29,14 +29,14 @@ export default function SideNav() {
       </div>
 
       {/* User section et logout */}
-      <div className="px-4 py-6 border-t border-slate-700">
+      <div className="px-4 py-6 border-t border-pink-200">
         <div className="flex items-center gap-3 mb-4 px-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-md">
             <span className="text-white font-medium text-sm">U</span>
           </div>
           <div className="hidden md:block">
-            <p className="text-white font-medium text-sm">Utilisateur</p>
-            <p className="text-slate-400 text-xs">Mode démo</p>
+            <p className="text-gray-800 font-medium text-sm">Utilisateur</p>
+            <p className="text-gray-500 text-xs">Mode démo</p>
           </div>
         </div>
         
@@ -46,8 +46,8 @@ export default function SideNav() {
             await signOut({ redirectTo: '/' });
           }}
         >
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all duration-200 group">
-            <PowerIcon className="w-5 h-5 group-hover:text-red-400 transition-colors" />
+          <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-pink-50 rounded-lg transition-all duration-200 group">
+            <PowerIcon className="w-5 h-5 group-hover:text-red-500 transition-colors" />
             <span className="hidden md:block text-sm">Se déconnecter</span>
           </button>
         </form>
