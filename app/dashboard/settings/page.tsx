@@ -27,7 +27,7 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Nom d'affichage
+                  Nom d&apos;affichage
                 </label>
                 <input
                   type="text"
@@ -142,7 +142,7 @@ export default function SettingsPage() {
               
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Mode d'affichage
+                  Mode d&apos;affichage
                 </label>
                 <select className="w-full px-4 py-3 border border-gray-300 rounded-xl" disabled>
                   <option>Mode clair</option>
@@ -180,7 +180,7 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                 <div>
                   <span className="font-semibold text-gray-900">Partage de données</span>
-                  <p className="text-sm text-gray-600">Aider à améliorer l'application</p>
+                  <p className="text-sm text-gray-600">Aider à améliorer l&apos;application</p>
                 </div>
                 <div className="relative">
                   <input type="checkbox" disabled className="sr-only" />

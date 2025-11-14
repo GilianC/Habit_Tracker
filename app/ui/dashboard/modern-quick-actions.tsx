@@ -1,4 +1,4 @@
-import { PlusIcon, ChartBarIcon, UserGroupIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, ChartBarIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function ModernQuickActions() {

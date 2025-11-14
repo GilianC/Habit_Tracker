@@ -1,4 +1,4 @@
-import { CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
 
 // Pour l'instant, données statiques. Plus tard, on récupérera depuis la DB
@@ -77,8 +77,8 @@ export default function DailyHabits() {
       {mockHabits.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           <ClockIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-          <p>Aucune habitude pour aujourd'hui</p>
-          <p className="text-sm">Commencez par en créer une !</p>
+          <p>Aucune habitude pour aujourd&apos;hui</p>
+          <p className="text-sm">Commencez par en créer une&nbsp;!</p>
         </div>
       )}
     </div>

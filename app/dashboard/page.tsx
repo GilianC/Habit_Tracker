@@ -1,4 +1,3 @@
-import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import ModernDailyHabits from '@/app/ui/dashboard/modern-daily-habits';
 import ModernStatsOverview from '@/app/ui/dashboard/modern-stats-overview';

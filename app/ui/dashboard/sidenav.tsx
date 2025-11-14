@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import NavLinks from '@/app/ui/dashboard/nav-links';
-import HabitLogo from '@/app/ui/habit-logo';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import { signOut } from '@/auth';
 
@@ -18,7 +17,7 @@ export default function SideNav() {
           </div>
           <div className="hidden md:block">
             <h1 className="text-xl font-bold text-gray-800">HabitFlow</h1>
-            <p className="text-gray-500 text-sm">Suivi d'habitudes</p>
+            <p className="text-gray-500 text-sm">Suivi d&apos;habitudes</p>
           </div>
         </Link>
       </div>

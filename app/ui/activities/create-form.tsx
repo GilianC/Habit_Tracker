@@ -35,13 +35,13 @@ export default function CreateActivityForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg bg-white p-6 shadow-sm border">
         <h2 className={`${lusitana.className} mb-4 text-lg font-semibold`}>
-          Détails de l'activité
+          Détails de l&apos;activité
         </h2>
 
         {/* Nom de l'activité */}
         <div className="mb-4">
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-            Nom de l'activité
+            Nom de l&apos;activité
           </label>
           <input
             type="text"
@@ -144,7 +144,7 @@ export default function CreateActivityForm() {
             className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-md hover:shadow-lg hover:scale-105 transition-all"
           >
             <CheckCircleIcon className="w-5 h-5" />
-            <span>Créer l'activité</span>
+            <span>Créer l&apos;activité</span>
           </button>
           
           <button

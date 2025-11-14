@@ -41,7 +41,7 @@ export default function LoginPage() {
             <p className="text-gray-600">
               Pas encore de compte ?{' '}
               <Link href="/signup" className="text-pink-600 hover:text-pink-700 font-semibold transition-colors">
-                S'inscrire
+                S&apos;inscrire
               </Link>
             </p>
           </div>

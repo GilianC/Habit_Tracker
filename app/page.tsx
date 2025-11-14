@@ -54,7 +54,7 @@ export default function Page() {
                   href="/signup"
                   className="group flex items-center justify-center gap-3 rounded-xl border-2 border-pink-300 bg-white/80 backdrop-blur-sm px-8 py-4 text-lg font-semibold text-pink-700 transition-all duration-300 hover:bg-white hover:scale-105"
                 >
-                  <span>S'inscrire</span>
+                  <span>S&apos;inscrire</span>
                 </Link>
               </div>
             </div>

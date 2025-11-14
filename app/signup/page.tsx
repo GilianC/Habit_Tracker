@@ -30,7 +30,7 @@ export default function SignupPage() {
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-pink-200/50 p-8 shadow-xl">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">Créer un compte</h2>
-            <p className="text-gray-600 text-center">Commencez votre transformation dès aujourd'hui</p>
+            <p className="text-gray-600 text-center">Commencez votre transformation dès aujourd&apos;hui</p>
           </div>
           
           <Suspense>
