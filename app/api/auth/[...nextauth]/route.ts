@@ -1,3 +1,4 @@
+
 import NextAuth from 'next-auth';
 import { authConfig } from '@/auth.config';
 import Credentials from 'next-auth/providers/credentials';
@@ -43,4 +44,5 @@ const handler = NextAuth({
   ],
 });
 
-export { handler as GET, handler as POST };
+export const GET = handler;
+export const POST = handler;
