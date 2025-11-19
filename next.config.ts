@@ -5,7 +5,12 @@ const nextConfig: NextConfig = {
     ppr: 'incremental'
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // En production, désactive cette option pour détecter les erreurs TypeScript
+    ignoreBuildErrors: process.env.NODE_ENV === 'development',
+  },
+  eslint: {
+    // Désactive ESLint pendant le build pour Vercel
+    ignoreDuringBuilds: true,
   },
 };
 

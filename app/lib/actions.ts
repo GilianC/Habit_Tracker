@@ -196,14 +196,24 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
+  console.log('🔐 [AUTHENTICATE] Tentative de connexion...');
   try {
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
     const redirectTo = formData.get('redirectTo') as string || '/dashboard/home';
+    
+    console.log('📧 Email:', email);
+    console.log('🔗 Redirect to:', redirectTo);
+    
     await signIn('credentials', {
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-      redirectTo: redirectTo,
+      email,
+      password,
+      redirectTo,
     });
+    
+    console.log('✅ [AUTHENTICATE] Connexion réussie!');
   } catch (error) {
+    console.error('❌ [AUTHENTICATE] Erreur:', error);
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
