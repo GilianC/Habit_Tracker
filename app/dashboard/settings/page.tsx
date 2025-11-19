@@ -3,7 +3,7 @@ import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 export default function SettingsPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <main className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className={`${lusitana.className} text-3xl font-bold text-gray-900 mb-2`}>
@@ -16,7 +16,7 @@ export default function SettingsPage() {
           {/* Paramètres du compte */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">👤</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
@@ -55,7 +55,7 @@ export default function SettingsPage() {
                   <option>Europe/Paris (UTC+1)</option>
                 </select>
               </div>
-              <button className="w-full py-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-600 rounded-xl cursor-not-allowed font-semibold">
+              <button className="w-full py-3 bg-linear-to-r from-gray-300 to-gray-400 text-gray-600 rounded-xl cursor-not-allowed font-semibold">
                 Sauvegarder (bientôt disponible)
               </button>
             </div>
@@ -64,7 +64,7 @@ export default function SettingsPage() {
           {/* Paramètres de notification */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">🔔</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
@@ -114,7 +114,7 @@ export default function SettingsPage() {
           {/* Paramètres d'apparence */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">🎨</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
@@ -128,13 +128,13 @@ export default function SettingsPage() {
                   Thème de couleur
                 </label>
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="p-3 border-2 border-emerald-500 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 cursor-pointer">
+                  <div className="p-3 border-2 border-emerald-500 rounded-xl bg-linear-to-br from-emerald-400 to-teal-500 cursor-pointer">
                     <div className="w-full h-8 rounded-lg bg-white/20"></div>
                   </div>
-                  <div className="p-3 border-2 border-gray-300 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 cursor-pointer opacity-60">
+                  <div className="p-3 border-2 border-gray-300 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 cursor-pointer opacity-60">
                     <div className="w-full h-8 rounded-lg bg-white/20"></div>
                   </div>
-                  <div className="p-3 border-2 border-gray-300 rounded-xl bg-gradient-to-br from-purple-400 to-pink-500 cursor-pointer opacity-60">
+                  <div className="p-3 border-2 border-gray-300 rounded-xl bg-linear-to-br from-purple-400 to-pink-500 cursor-pointer opacity-60">
                     <div className="w-full h-8 rounded-lg bg-white/20"></div>
                   </div>
                 </div>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
           {/* Paramètres de confidentialité */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">🔒</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
@@ -193,9 +193,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Message informatif */}
-        <div className="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-6 shadow-lg">
+        <div className="mt-8 bg-linear-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-6 shadow-lg">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-linear-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shrink-0">
               <Cog6ToothIcon className="w-5 h-5 text-white" />
             </div>
             <div>

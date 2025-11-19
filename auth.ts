@@ -11,9 +11,14 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 async function getUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
+    console.log('🔍 [AUTH] User found:', user[0] ? { 
+      id: user[0].id, 
+      email: user[0].email, 
+      hasPasswordHash: !!user[0].password_hash 
+    } : 'NO USER');
     return user[0];
   } catch (error) {
-    console.error('Failed to fetch user:', error);
+    console.error('❌ Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
   }
 }
@@ -30,13 +35,28 @@ export const { auth, signIn, signOut } = NextAuth({
          if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
-          if (!user) return null;
-          const passwordsMatch = await bcrypt.compare(password, user.password);
+          
+          if (!user) {
+            console.log('❌ User not found');
+            return null;
+          }
+          
+          if (!user.password_hash) {
+            console.log('❌ No password_hash field!');
+            return null;
+          }
+          
+          console.log('🔐 Comparing passwords...');
+          const passwordsMatch = await bcrypt.compare(password, user.password_hash);
+          console.log('🔐 Match result:', passwordsMatch);
  
-          if (passwordsMatch) return user;
+          if (passwordsMatch) {
+            console.log('✅ Authentication successful!');
+            return user;
+          }
         }
  
-        console.log('Invalid credentials');
+        console.log('❌ Invalid credentials');
         return null;
       },
     }),

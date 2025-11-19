@@ -5,9 +5,9 @@ import Link from 'next/link';
  
 export default function SignupPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-linear-to-br from-pink-50 via-rose-50 to-pink-100 flex items-center justify-center p-4">
       {/* Effets de fond */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-200/30 to-rose-200/30"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-pink-200/30 to-rose-200/30"></div>
       <div className="absolute inset-0 opacity-30">
         <div className="h-full w-full bg-[radial-gradient(circle_at_50%_50%,rgba(233,30,99,0.1),transparent_50%)]"></div>
       </div>
@@ -16,7 +16,7 @@ export default function SignupPage() {
         {/* Header avec logo moderne */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-4 p-6 rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 shadow-xl">
-            <div className="bg-gradient-to-br from-pink-500 to-rose-600 p-3 rounded-xl shadow-lg">
+            <div className="bg-linear-to-br from-pink-500 to-rose-600 p-3 rounded-xl shadow-lg">
               <HabitLogo />
             </div>
             <div>

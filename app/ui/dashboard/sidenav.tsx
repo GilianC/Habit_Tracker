@@ -12,7 +12,7 @@ export default function SideNav() {
           className="flex items-center gap-3 group"
           href="/"
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-md">
+          <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-md">
             <span className="text-white font-bold text-lg">H</span>
           </div>
           <div className="hidden md:block">
@@ -30,7 +30,7 @@ export default function SideNav() {
       {/* User section et logout */}
       <div className="px-4 py-6 border-t border-pink-200">
         <div className="flex items-center gap-3 mb-4 px-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-md">
+          <div className="w-8 h-8 bg-linear-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-md">
             <span className="text-white font-medium text-sm">U</span>
           </div>
           <div className="hidden md:block">

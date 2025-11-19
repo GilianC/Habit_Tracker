@@ -14,7 +14,8 @@ import { useSearchParams } from 'next/navigation';
  
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard/home';
+  const successMessage = searchParams.get('success');
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
     undefined,
@@ -22,6 +23,19 @@ export default function LoginForm() {
  
   return (
     <form action={formAction} className="space-y-3">
+      {/* Message de succès après inscription */}
+      {successMessage === 'inscription' && (
+        <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+          <div className="flex items-center gap-2">
+            <div className="text-green-600 text-xl">✓</div>
+            <div>
+              <p className="text-sm font-semibold text-green-800">Compte créé avec succès !</p>
+              <p className="text-xs text-green-700">Vous pouvez maintenant vous connecter.</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
           Connectez-vous pour continuer.

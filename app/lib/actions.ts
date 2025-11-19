@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
-import { signIn } from '@/auth';
+import { auth, signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from 'bcrypt';
  
@@ -69,28 +69,71 @@ export async function signup(
       VALUES (${name}, ${email}, ${hashedPassword}, ${new Date().toISOString()}, ${new Date().toISOString()})
     `;
 
-    // Rediriger vers la page de connexion
-    redirect('/login?message=Compte créé avec succès');
+    console.log('✅ Utilisateur créé avec succès:', email);
+    
   } catch (error) {
     console.error('Erreur lors de l\'inscription:', error);
+    if ((error as any).code === '23505') { // Duplicate key error
+      return 'Un utilisateur avec cet email existe déjà';
+    }
     return 'Une erreur est survenue lors de la création du compte';
   }
+  
+  // Rediriger vers la page de connexion avec un message de succès
+  redirect('/login?success=inscription');
 }
 
 // Actions pour les activités
-export async function createActivity(formData: FormData) {
-  const { userId, name, frequency } = CreateActivity.parse({
-    userId: formData.get('userId'),
-    name: formData.get('name'),
-    frequency: formData.get('frequency'),
-  });
+export async function createActivity(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    // Récupérer l'utilisateur connecté depuis la session
+    const session = await auth();
+    if (!session?.user?.email) {
+      return 'Vous devez être connecté pour créer une activité';
+    }
 
-  await sql`
-    INSERT INTO activities (user_id, name, frequency, created_at)
-    VALUES (${userId}, ${name}, ${frequency}, ${new Date().toISOString()})
-  `;
-  
-  revalidatePath('/dashboard/activities');
+    // Récupérer l'ID de l'utilisateur
+    const userResult = await sql`
+      SELECT id FROM users WHERE email = ${session.user.email}
+    `;
+    
+    if (userResult.length === 0) {
+      return 'Utilisateur non trouvé';
+    }
+
+    const userId = userResult[0].id;
+    const name = formData.get('name') as string;
+    const frequency = formData.get('frequency') as string;
+    const color = formData.get('color') as string || '#10B981';
+    const icon = formData.get('icon') as string || '✅';
+
+    // Validation
+    if (!name || name.trim().length === 0) {
+      return 'Le nom de l\'activité est requis';
+    }
+
+    if (!['daily', 'weekly', 'monthly'].includes(frequency)) {
+      return 'Fréquence invalide';
+    }
+
+    // Créer l'activité
+    await sql`
+      INSERT INTO activities (user_id, name, frequency, color, icon, created_at)
+      VALUES (${userId}, ${name}, ${frequency}, ${color}, ${icon}, ${new Date().toISOString()})
+    `;
+
+    console.log('✅ Activité créée avec succès:', name);
+    revalidatePath('/dashboard/activities');
+    revalidatePath('/dashboard/home');
+  } catch (error) {
+    console.error('❌ Erreur lors de la création de l\'activité:', error);
+    return 'Une erreur est survenue lors de la création de l\'activité';
+  }
+
+  // Rediriger vers la page des activités
   redirect('/dashboard/activities');
 }
 
@@ -154,7 +197,12 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    await signIn('credentials', formData);
+    const redirectTo = formData.get('redirectTo') as string || '/dashboard/home';
+    await signIn('credentials', {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+      redirectTo: redirectTo,
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

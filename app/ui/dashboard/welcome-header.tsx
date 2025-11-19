@@ -7,7 +7,7 @@ export default function WelcomeHeader() {
   
   return (
     <div className="mb-8">
-      <div className="relative overflow-hidden bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-8 shadow-2xl">
+      <div className="relative overflow-hidden bg-linear-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-8 shadow-2xl">
         {/* Effet de background */}
         <div className="absolute inset-0 bg-black/5"></div>
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>

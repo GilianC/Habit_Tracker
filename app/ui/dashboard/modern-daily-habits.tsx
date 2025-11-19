@@ -40,7 +40,7 @@ export default function ModernDailyHabits() {
         <div className="relative">
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000 ease-out shadow-lg"
+              className="h-full bg-linear-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000 ease-out shadow-lg"
               style={{ width: `${progressPercentage}%` }}
             >
               <div className="h-full bg-white/20 animate-pulse"></div>
@@ -59,16 +59,16 @@ export default function ModernDailyHabits() {
             key={habit.id}
             className={`group relative overflow-hidden rounded-xl p-4 transition-all duration-300 border ${
               habit.completed 
-                ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 shadow-sm' 
+                ? 'bg-linear-to-r from-emerald-50 to-teal-50 border-emerald-200 shadow-sm' 
                 : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
             }`}
           >
             <div className="flex items-center gap-4">
               {/* Checkbox moderne */}
               <button
-                className={`relative flex-shrink-0 w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                className={`relative shrink-0 w-8 h-8 rounded-full border-2 transition-all duration-300 ${
                   habit.completed
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 border-emerald-500 shadow-lg'
+                    ? 'bg-linear-to-r from-emerald-500 to-teal-500 border-emerald-500 shadow-lg'
                     : 'border-gray-300 hover:border-emerald-400 hover:shadow-md'
                 }`}
               >
@@ -78,7 +78,7 @@ export default function ModernDailyHabits() {
               </button>
               
               {/* Icône de l'habitude */}
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl">
+              <div className="shrink-0 w-12 h-12 bg-linear-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl">
                 {habit.icon}
               </div>
               
@@ -88,7 +88,7 @@ export default function ModernDailyHabits() {
                   {habit.name}
                 </h3>
                 <div className="flex items-center gap-3 mt-1">
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-linear-to-r ${
                     categoryColors[habit.category as keyof typeof categoryColors]
                   } text-white`}>
                     {habit.category}
@@ -100,7 +100,7 @@ export default function ModernDailyHabits() {
               </div>
               
               {/* Status */}
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {habit.completed ? (
                   <div className="text-emerald-600">
                     <CheckCircleIcon className="w-6 h-6" />
@@ -115,7 +115,7 @@ export default function ModernDailyHabits() {
             
             {/* Effet de survol */}
             {!habit.completed && (
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 to-teal-500/0 group-hover:from-emerald-500/5 group-hover:to-teal-500/5 transition-all duration-300 rounded-xl"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-emerald-500/0 to-teal-500/0 group-hover:from-emerald-500/5 group-hover:to-teal-500/5 transition-all duration-300 rounded-xl"></div>
             )}
           </div>
         ))}
@@ -123,7 +123,7 @@ export default function ModernDailyHabits() {
 
       {/* Message motivant */}
       {progressPercentage === 100 && (
-        <div className="mt-6 p-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl text-white text-center">
+        <div className="mt-6 p-4 bg-linear-to-r from-yellow-400 to-orange-500 rounded-xl text-white text-center">
           <div className="text-2xl mb-1">🎉</div>
           <div className="font-bold">Félicitations ! Journée parfaite !</div>
         </div>

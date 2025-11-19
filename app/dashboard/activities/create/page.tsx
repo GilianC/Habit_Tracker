@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function CreateActivityPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 p-6">
+    <main className="min-h-screen bg-linear-to-br from-pink-50 to-rose-100 p-6">
       <div className="max-w-2xl mx-auto">
         {/* Navigation de retour */}
         <div className="mb-8">
@@ -21,7 +21,7 @@ export default function CreateActivityPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-linear-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-white text-2xl">✨</span>
             </div>
           </div>
@@ -39,9 +39,9 @@ export default function CreateActivityPage() {
         </div>
 
         {/* Conseils */}
-        <div className="mt-8 bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-2xl p-6 shadow-lg">
+        <div className="mt-8 bg-linear-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-2xl p-6 shadow-lg">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+            <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center shrink-0 shadow-md">
               <span className="text-white text-lg">💡</span>
             </div>
             <div>

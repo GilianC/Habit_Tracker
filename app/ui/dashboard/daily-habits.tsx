@@ -50,7 +50,7 @@ export default function DailyHabits() {
             }`}
           >
             <button
-              className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+              className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                 habit.completed
                   ? 'bg-green-500 border-green-500 text-white'
                   : 'border-gray-300 hover:border-green-500'

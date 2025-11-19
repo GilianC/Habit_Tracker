@@ -73,7 +73,7 @@ export default function ModernStatsOverview() {
             className="group relative overflow-hidden bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300"
           >
             {/* Background gradient subtil */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-30 group-hover:opacity-40 transition-opacity duration-300`}></div>
+            <div className={`absolute inset-0 bg-linear-to-br ${stat.bgGradient} opacity-30 group-hover:opacity-40 transition-opacity duration-300`}></div>
             
             {/* Contenu */}
             <div className="relative z-10">
@@ -97,7 +97,7 @@ export default function ModernStatsOverview() {
               {/* Valeur principale */}
               <div className="mb-2">
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-3xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                  <span className={`text-3xl font-bold bg-linear-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                     {stat.value}
                   </span>
                   <span className="text-lg text-gray-600">{stat.unit}</span>
@@ -126,7 +126,7 @@ export default function ModernStatsOverview() {
               {/* Barre de progression */}
               <div className="relative w-full bg-gray-200 rounded-full h-32 mb-3 overflow-hidden">
                 <div 
-                  className="absolute bottom-0 w-full bg-gradient-to-t from-pink-500 to-rose-400 rounded-full transition-all duration-1000 ease-out"
+                  className="absolute bottom-0 w-full bg-linear-to-t from-pink-500 to-rose-400 rounded-full transition-all duration-1000 ease-out"
                   style={{ height: `${day.percentage}%` }}
                 >
                   <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
@@ -150,7 +150,7 @@ export default function ModernStatsOverview() {
         {/* Légende */}
         <div className="mt-6 flex items-center justify-center gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-400 rounded-full"></div>
+            <div className="w-3 h-3 bg-linear-to-r from-pink-500 to-rose-400 rounded-full"></div>
             Habitudes complétées
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function ModernStatsOverview() {
         {/* Meilleure catégorie */}
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-2xl shadow-md">
+            <div className="w-12 h-12 bg-linear-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-2xl shadow-md">
               🏆
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function ModernStatsOverview() {
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4">
+          <div className="bg-linear-to-r from-pink-50 to-rose-50 rounded-xl p-4">
             <div className="text-2xl font-bold text-rose-700 mb-1">Bien-être</div>
             <div className="text-rose-600">94% de réussite cette semaine</div>
           </div>
@@ -179,7 +179,7 @@ export default function ModernStatsOverview() {
         {/* Zone d'amélioration */}
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-fuchsia-400 to-pink-500 rounded-xl flex items-center justify-center text-2xl shadow-md">
+            <div className="w-12 h-12 bg-linear-to-br from-fuchsia-400 to-pink-500 rounded-xl flex items-center justify-center text-2xl shadow-md">
               💪
             </div>
             <div>
@@ -188,7 +188,7 @@ export default function ModernStatsOverview() {
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-fuchsia-50 to-pink-50 rounded-xl p-4">
+          <div className="bg-linear-to-r from-fuchsia-50 to-pink-50 rounded-xl p-4">
             <div className="text-2xl font-bold text-fuchsia-700 mb-1">Sport</div>
             <div className="text-fuchsia-600">58% de réussite - On peut faire mieux !</div>
           </div>

@@ -102,7 +102,7 @@ export default function NavLinks() {
             <div className={clsx(
               'flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200',
               {
-                [`bg-gradient-to-br ${colorClasses[link.color as keyof typeof colorClasses]} shadow-md`]: isActive,
+                [`bg-linear-to-br ${colorClasses[link.color as keyof typeof colorClasses]} shadow-md`]: isActive,
                 'bg-gray-200 group-hover:bg-gray-300': !isActive,
               }
             )}>

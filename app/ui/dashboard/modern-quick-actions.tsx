@@ -38,9 +38,9 @@ export default function ModernQuickActions() {
           <Link
             key={index}
             href={action.href}
-            className={`group flex items-center gap-4 p-4 bg-gradient-to-r ${action.gradient} ${action.hoverGradient} rounded-xl text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg`}
+            className={`group flex items-center gap-4 p-4 bg-linear-to-r ${action.gradient} ${action.hoverGradient} rounded-xl text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg`}
           >
-            <div className="flex-shrink-0 p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+            <div className="shrink-0 p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
               <action.icon className="w-5 h-5" />
             </div>
             

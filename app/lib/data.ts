@@ -219,3 +219,99 @@ export async function fetchFilteredCustomers(query: string) {
     throw new Error('Failed to fetch customer table.');
   }
 }
+
+// ==================== FONCTIONS POUR HABIT TRACKER ====================
+
+// Récupérer toutes les activités d'un utilisateur
+export async function fetchUserActivities(userEmail: string) {
+  try {
+    const activities = await sql`
+      SELECT 
+        a.id,
+        a.name,
+        a.frequency,
+        a.color,
+        a.icon,
+        a.created_at,
+        COUNT(DISTINCT al.id) FILTER (WHERE al.is_done = true) as completed_count,
+        COUNT(DISTINCT al.id) as total_logs
+      FROM activities a
+      INNER JOIN users u ON a.user_id = u.id
+      LEFT JOIN activity_logs al ON a.id = al.activity_id
+      WHERE u.email = ${userEmail}
+      GROUP BY a.id, a.name, a.frequency, a.color, a.icon, a.created_at
+      ORDER BY a.created_at DESC
+    `;
+
+    return activities;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des activités:', error);
+    throw new Error('Impossible de récupérer les activités');
+  }
+}
+
+// Récupérer les activités avec leur statut du jour
+export async function fetchUserActivitiesWithTodayStatus(userEmail: string) {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    const activities = await sql`
+      SELECT 
+        a.id,
+        a.name,
+        a.frequency,
+        a.color,
+        a.icon,
+        a.created_at,
+        al.is_done as completed_today,
+        (
+          SELECT COUNT(DISTINCT date) 
+          FROM activity_logs 
+          WHERE activity_id = a.id AND is_done = true
+          AND date >= (CURRENT_DATE - INTERVAL '7 days')
+        ) as streak
+      FROM activities a
+      INNER JOIN users u ON a.user_id = u.id
+      LEFT JOIN activity_logs al ON a.id = al.activity_id AND al.date = ${today}
+      WHERE u.email = ${userEmail}
+      ORDER BY a.created_at DESC
+    `;
+
+    return activities;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des activités:', error);
+    throw new Error('Impossible de récupérer les activités');
+  }
+}
+
+// Récupérer les statistiques du dashboard
+export async function fetchDashboardStats(userEmail: string) {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - 7);
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+
+    const stats = await sql`
+      SELECT 
+        COUNT(DISTINCT a.id) as total_activities,
+        COUNT(DISTINCT al.id) FILTER (WHERE al.date = ${today} AND al.is_done = true) as completed_today,
+        COUNT(DISTINCT al.id) FILTER (WHERE al.date >= ${weekStartStr} AND al.is_done = true) as completed_this_week,
+        COUNT(DISTINCT a.id) FILTER (WHERE a.frequency = 'daily') as daily_activities
+      FROM activities a
+      INNER JOIN users u ON a.user_id = u.id
+      LEFT JOIN activity_logs al ON a.id = al.activity_id
+      WHERE u.email = ${userEmail}
+    `;
+
+    return stats[0] || {
+      total_activities: 0,
+      completed_today: 0,
+      completed_this_week: 0,
+      daily_activities: 0
+    };
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des stats:', error);
+    throw new Error('Impossible de récupérer les statistiques');
+  }
+}

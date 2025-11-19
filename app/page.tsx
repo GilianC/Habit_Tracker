@@ -6,9 +6,9 @@ import Link from 'next/link';
 export default function Page() {
   return (
     <>
-      <main className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100">
+      <main className="min-h-screen bg-linear-to-br from-pink-50 via-rose-50 to-pink-100">
         {/* Effets de fond */}
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-200/30 to-rose-200/30"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-pink-200/30 to-rose-200/30"></div>
         <div className="absolute inset-0 opacity-30">
           <div className="h-full w-full bg-[radial-gradient(circle_at_50%_50%,rgba(233,30,99,0.1),transparent_50%)]"></div>
         </div>
@@ -17,7 +17,7 @@ export default function Page() {
           {/* Header avec logo moderne */}
           <div className="flex h-20 shrink-0 items-center rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 p-4 md:h-52 shadow-xl">
             <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-br from-pink-500 to-rose-600 p-3 rounded-xl shadow-lg">
+            <div className="bg-linear-to-br from-pink-500 to-rose-600 p-3 rounded-xl shadow-lg">
                 <HabitLogo />
               </div>
               <div className="hidden md:block">
@@ -32,7 +32,7 @@ export default function Page() {
             <div className="flex flex-col justify-center gap-8 rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 px-8 py-12 lg:w-2/5 lg:px-12 shadow-xl">
               <div className="space-y-6">
                 <h1 className={`text-4xl font-bold text-gray-800 lg:text-5xl lg:leading-tight ${lusitana.className} antialiased`}>
-                  <span className="bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent">
                     HabitFlow
                   </span>
                 </h1>
@@ -45,7 +45,7 @@ export default function Page() {
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Link
                   href="/login"
-                  className="group flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+                  className="group flex items-center justify-center gap-3 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
                 >
                   <span>Se connecter</span> 
                   <ArrowRightIcon className="w-5 transition-transform group-hover:translate-x-1" />
@@ -69,7 +69,7 @@ export default function Page() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="group p-6 rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 hover:bg-white transition-all duration-300 shadow-lg">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center shadow-md">
+                    <div className="shrink-0 w-12 h-12 bg-linear-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center shadow-md">
                       <CheckCircleIcon className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -81,7 +81,7 @@ export default function Page() {
                 
                 <div className="group p-6 rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 hover:bg-white transition-all duration-300 shadow-lg">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                    <div className="shrink-0 w-12 h-12 bg-linear-to-br from-pink-400 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
                       <ChartBarIcon className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -93,7 +93,7 @@ export default function Page() {
                 
                 <div className="group p-6 rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 hover:bg-white transition-all duration-300 shadow-lg">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                    <div className="shrink-0 w-12 h-12 bg-linear-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
                       <UserGroupIcon className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -105,7 +105,7 @@ export default function Page() {
                 
                 <div className="group p-6 rounded-2xl bg-white/90 backdrop-blur-lg border border-pink-200/50 hover:bg-white transition-all duration-300 shadow-lg">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-rose-400 to-rose-600 rounded-xl flex items-center justify-center shadow-md">
+                    <div className="shrink-0 w-12 h-12 bg-linear-to-br from-rose-400 to-rose-600 rounded-xl flex items-center justify-center shadow-md">
                       <span className="text-white font-bold text-xl">🏆</span>
                     </div>
                     <div>
