@@ -200,10 +200,8 @@ export async function authenticate(
   try {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    const redirectTo = formData.get('redirectTo') as string || '/dashboard/home';
     
     console.log('📧 Email:', email);
-    console.log('🔗 Redirect to:', redirectTo);
     
     // NE PAS passer redirectTo à signIn - ça crée des URLs avec localhost
     await signIn('credentials', {
