@@ -25,6 +25,8 @@ async function getUser(email: string): Promise<User | undefined> {
  
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  trustHost: true, // Important pour Vercel
+  useSecureCookies: process.env.NODE_ENV === 'production',
   providers: [
     Credentials({
       async authorize(credentials) {
