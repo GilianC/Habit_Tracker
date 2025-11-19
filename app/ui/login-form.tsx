@@ -14,22 +14,6 @@ import { useSearchParams } from 'next/navigation';
  
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const rawCallbackUrl = searchParams.get('callbackUrl') || '/dashboard/home';
-  
-  // S'assurer que le callbackUrl est toujours un chemin relatif
-  let callbackUrl = '/dashboard/home';
-  try {
-    // Si c'est une URL complète, extraire seulement le pathname
-    if (rawCallbackUrl.startsWith('http')) {
-      const url = new URL(rawCallbackUrl);
-      callbackUrl = url.pathname;
-    } else {
-      callbackUrl = rawCallbackUrl;
-    }
-  } catch {
-    callbackUrl = '/dashboard/home';
-  }
-  
   const successMessage = searchParams.get('success');
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
@@ -96,7 +80,6 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        <input type="hidden" name="redirectTo" value={callbackUrl} />
         <Button className="mt-4 w-full" aria-disabled={isPending}>
           Se connecter <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
