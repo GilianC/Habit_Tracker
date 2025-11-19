@@ -205,10 +205,11 @@ export async function authenticate(
     console.log('📧 Email:', email);
     console.log('🔗 Redirect to:', redirectTo);
     
+    // NE PAS passer redirectTo à signIn - ça crée des URLs avec localhost
     await signIn('credentials', {
       email,
       password,
-      redirectTo,
+      redirect: false, // IMPORTANT: Désactive la redirection automatique
     });
     
     console.log('✅ [AUTHENTICATE] Connexion réussie!');
@@ -224,4 +225,7 @@ export async function authenticate(
     }
     throw error;
   }
+  
+  // Redirection manuelle APRÈS la connexion réussie
+  redirect('/dashboard/home');
 }

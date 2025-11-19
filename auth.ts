@@ -7,6 +7,22 @@ import bcrypt from 'bcrypt';
 import postgres from 'postgres';
  
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+// Détecter l'URL de base automatiquement
+const getBaseUrl = () => {
+  // En production Vercel
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Utiliser AUTH_URL si définie
+  if (process.env.AUTH_URL) {
+    return process.env.AUTH_URL;
+  }
+  // Par défaut en développement
+  return 'http://localhost:3000';
+};
+
+console.log('🌐 [AUTH] Base URL:', getBaseUrl());
   
 async function getUser(email: string): Promise<User | undefined> {
   try {
@@ -25,6 +41,8 @@ async function getUser(email: string): Promise<User | undefined> {
  
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  trustHost: true, // Important pour Vercel
+  useSecureCookies: process.env.NODE_ENV === 'production',
   providers: [
     Credentials({
       async authorize(credentials) {
