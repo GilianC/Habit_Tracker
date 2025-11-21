@@ -5,7 +5,7 @@ import { ArrowLeftIcon, CheckCircleIcon, XMarkIcon, HomeIcon, ChartBarIcon, Trop
 import { fetchActivityDetails, fetchActivityHistory } from '@/app/lib/data';
 import ValidateActivityButton from './validate-activity-button';
 
-export default async function ActivityDetailPage({ params }: { params: { id: string } }) {
+export default async function ActivityDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   
   if (!session?.user?.email) {
