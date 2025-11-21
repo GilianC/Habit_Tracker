@@ -6,6 +6,7 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
+  Activity,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -251,11 +252,11 @@ export async function fetchUserActivities(userEmail: string) {
 }
 
 // Récupérer les activités avec leur statut du jour
-export async function fetchUserActivitiesWithTodayStatus(userEmail: string) {
+export async function fetchUserActivitiesWithTodayStatus(userEmail: string): Promise<Activity[]> {
   try {
     const today = new Date().toISOString().split('T')[0];
     
-    const activities = await sql`
+    const result = await sql`
       SELECT 
         a.id,
         a.name,
@@ -277,7 +278,7 @@ export async function fetchUserActivitiesWithTodayStatus(userEmail: string) {
       ORDER BY a.created_at DESC
     `;
 
-    return activities;
+    return result as unknown as Activity[];
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des activités:', error);
     throw new Error('Impossible de récupérer les activités');
