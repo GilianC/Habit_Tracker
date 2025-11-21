@@ -6,6 +6,8 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
+  Activity,
+  Challenge,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -220,7 +222,7 @@ export async function fetchFilteredCustomers(query: string) {
   }
 }
 
-// ==================== FONCTIONS POUR HABIT TRACKER ====================
+// ==================== FONCTIONS POUR HABITFLOW ====================
 
 // Récupérer toutes les activités d'un utilisateur
 export async function fetchUserActivities(userEmail: string) {
@@ -251,11 +253,11 @@ export async function fetchUserActivities(userEmail: string) {
 }
 
 // Récupérer les activités avec leur statut du jour
-export async function fetchUserActivitiesWithTodayStatus(userEmail: string) {
+export async function fetchUserActivitiesWithTodayStatus(userEmail: string): Promise<Activity[]> {
   try {
     const today = new Date().toISOString().split('T')[0];
     
-    const activities = await sql`
+    const result = await sql`
       SELECT 
         a.id,
         a.name,
@@ -277,7 +279,7 @@ export async function fetchUserActivitiesWithTodayStatus(userEmail: string) {
       ORDER BY a.created_at DESC
     `;
 
-    return activities;
+    return result as unknown as Activity[];
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des activités:', error);
     throw new Error('Impossible de récupérer les activités');
@@ -313,5 +315,375 @@ export async function fetchDashboardStats(userEmail: string) {
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des stats:', error);
     throw new Error('Impossible de récupérer les statistiques');
+  }
+}
+
+// Récupérer les détails d'une activité avec ses statistiques
+export async function fetchActivityDetails(activityId: string, userEmail: string) {
+  try {
+    const activity = await sql`
+      SELECT 
+        a.*,
+        (
+          SELECT COUNT(*)
+          FROM activity_logs
+          WHERE activity_id = a.id AND is_done = true
+        ) as total_completions,
+        (
+          SELECT MAX(date)
+          FROM activity_logs
+          WHERE activity_id = a.id AND is_done = true
+        ) as last_completed,
+        (
+          SELECT is_done
+          FROM activity_logs
+          WHERE activity_id = a.id 
+          AND date = CURRENT_DATE
+        ) as completed_today
+      FROM activities a
+      INNER JOIN users u ON a.user_id = u.id
+      WHERE a.id = ${activityId}
+      AND u.email = ${userEmail}
+    `;
+
+    return activity[0] || null;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de l\'activité:', error);
+    throw new Error('Impossible de récupérer l\'activité');
+  }
+}
+
+// Récupérer l'historique des 7 derniers jours d'une activité
+export async function fetchActivityHistory(activityId: string, userEmail: string) {
+  try {
+    const history = await sql`
+      WITH RECURSIVE dates AS (
+        SELECT CURRENT_DATE - INTERVAL '6 days' as date
+        UNION ALL
+        SELECT date + INTERVAL '1 day'
+        FROM dates
+        WHERE date < CURRENT_DATE
+      )
+      SELECT 
+        dates.date::date,
+        COALESCE(al.is_done, false) as completed
+      FROM dates
+      LEFT JOIN activity_logs al ON 
+        al.date = dates.date::date
+        AND al.activity_id = ${activityId}
+        AND EXISTS (
+          SELECT 1 FROM activities a
+          INNER JOIN users u ON a.user_id = u.id
+          WHERE a.id = ${activityId}
+          AND u.email = ${userEmail}
+        )
+      ORDER BY dates.date DESC
+    `;
+    
+    return history;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de l\'historique:', error);
+    throw new Error('Impossible de récupérer l\'historique');
+  }
+}
+
+// Récupérer toutes les activités de l'utilisateur avec leurs logs pour le calendrier
+export async function fetchUserActivitiesForCalendar(userEmail: string) {
+  try {
+    const result = await sql`
+      SELECT 
+        a.id,
+        a.name,
+        a.color,
+        a.icon,
+        a.frequency,
+        a.start_date,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'date', al.date,
+              'is_done', al.is_done
+            )
+            ORDER BY al.date DESC
+          ) FILTER (WHERE al.date IS NOT NULL),
+          '[]'::json
+        ) as logs
+      FROM activities a
+      INNER JOIN users u ON a.user_id = u.id
+      LEFT JOIN activity_logs al ON a.id = al.activity_id
+      WHERE u.email = ${userEmail}
+      GROUP BY a.id, a.name, a.color, a.icon, a.frequency, a.start_date
+      ORDER BY a.created_at DESC
+    `;
+
+    // Transformer le résultat pour correspondre au type attendu
+    return result.map(row => ({
+      id: String(row.id),
+      name: row.name as string,
+      color: row.color as string,
+      icon: row.icon as string,
+      frequency: row.frequency as string,
+      start_date: row.start_date as string,
+      logs: (row.logs as any[]) || []
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des activités pour le calendrier:', error);
+    throw new Error('Impossible de récupérer les activités pour le calendrier');
+  }
+}
+
+// Récupérer le nombre d'étoiles de l'utilisateur
+export async function fetchUserStars(userEmail: string) {
+  try {
+    const result = await sql`
+      SELECT stars
+      FROM users
+      WHERE email = ${userEmail}
+    `;
+
+    return result[0]?.stars || 0;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des étoiles:', error);
+    return 0;
+  }
+}
+
+// Récupérer tous les défis disponibles (prédéfinis)
+export async function fetchAllChallenges() {
+  try {
+    const result = await sql`
+      SELECT 
+        id, name, description, goal_type, goal_value, 
+        star_reward, difficulty, icon, category, is_active
+      FROM challenges
+      WHERE is_active = true
+      ORDER BY 
+        CASE difficulty
+          WHEN 'easy' THEN 1
+          WHEN 'medium' THEN 2
+          WHEN 'hard' THEN 3
+        END,
+        star_reward ASC
+    `;
+
+    return result.map(row => ({
+      id: String(row.id),
+      name: row.name as string,
+      description: row.description as string,
+      goal_type: row.goal_type as string,
+      goal_value: Number(row.goal_value),
+      star_reward: Number(row.star_reward),
+      difficulty: row.difficulty as string,
+      icon: row.icon as string,
+      category: row.category as string,
+      is_active: row.is_active as boolean
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des défis:', error);
+    throw new Error('Impossible de récupérer les défis');
+  }
+}
+
+// Récupérer les défis de l'utilisateur (acceptés/complétés)
+export async function fetchUserChallenges(userEmail: string): Promise<Challenge[]> {
+  try {
+    const result = await sql`
+      SELECT 
+        uc.id as user_challenge_id,
+        uc.status,
+        uc.progress,
+        uc.start_date,
+        uc.end_date,
+        uc.completed_at,
+        c.id as challenge_id,
+        c.name,
+        c.description,
+        c.goal_type,
+        c.goal_value,
+        c.star_reward,
+        c.difficulty,
+        c.icon,
+        c.category
+      FROM user_challenges uc
+      INNER JOIN users u ON uc.user_id = u.id
+      INNER JOIN challenges c ON uc.challenge_id = c.id
+      WHERE u.email = ${userEmail}
+      ORDER BY 
+        CASE uc.status
+          WHEN 'in_progress' THEN 1
+          WHEN 'completed' THEN 2
+          WHEN 'failed' THEN 3
+        END,
+        uc.created_at DESC
+    `;
+
+    return result.map(row => ({
+      id: String(row.user_challenge_id),
+      user_challenge_id: String(row.user_challenge_id),
+      challenge_id: String(row.challenge_id),
+      name: row.name as string,
+      description: row.description as string,
+      goal_type: row.goal_type as string,
+      goal_value: Number(row.goal_value),
+      goal_days: undefined,
+      star_reward: Number(row.star_reward),
+      difficulty: row.difficulty as string,
+      icon: row.icon as string,
+      category: row.category as string,
+      status: row.status as string,
+      progress: Number(row.progress),
+      start_date: row.start_date as string,
+      end_date: row.end_date as string,
+      completed_at: row.completed_at as string,
+      activity_name: undefined,
+      activity_icon: undefined,
+      activity_color: undefined,
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des défis utilisateur:', error);
+    throw new Error('Impossible de récupérer les défis utilisateur');
+  }
+}
+
+// Récupérer tous les badges disponibles
+export async function fetchAllBadges() {
+  try {
+    const result = await sql`
+      SELECT 
+        id, title, description, icon, star_cost, rarity, category, created_at
+      FROM badges
+      ORDER BY star_cost ASC, created_at ASC
+    `;
+
+    return result.map(row => ({
+      id: String(row.id),
+      title: row.title as string,
+      description: row.description as string,
+      icon: row.icon as string,
+      star_cost: Number(row.star_cost),
+      rarity: row.rarity as string,
+      category: row.category as string,
+      created_at: row.created_at as string
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des badges:', error);
+    throw new Error('Impossible de récupérer les badges');
+  }
+}
+
+// Récupérer les badges débloqués par l'utilisateur
+export async function fetchUserBadges(userEmail: string) {
+  try {
+    const result = await sql`
+      SELECT 
+        ub.badge_id,
+        ub.unlocked_at,
+        b.title,
+        b.icon,
+        b.star_cost,
+        b.rarity
+      FROM user_badges ub
+      INNER JOIN users u ON ub.user_id = u.id
+      INNER JOIN badges b ON ub.badge_id = b.id
+      WHERE u.email = ${userEmail}
+      ORDER BY ub.unlocked_at DESC
+    `;
+
+    return result.map(row => ({
+      badge_id: String(row.badge_id),
+      unlocked_at: row.unlocked_at as string,
+      title: row.title as string,
+      icon: row.icon as string,
+      star_cost: Number(row.star_cost),
+      rarity: row.rarity as string
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des badges utilisateur:', error);
+    throw new Error('Impossible de récupérer les badges utilisateur');
+  }
+}
+
+// ============================================
+// DÉFIS JOURNALIERS
+// ============================================
+
+// Récupérer ou créer les défis journaliers pour aujourd'hui
+export async function fetchTodayDailyChallenges(userEmail: string) {
+  try {
+    // Récupérer l'ID de l'utilisateur
+    const userResult = await sql`
+      SELECT id FROM users WHERE email = ${userEmail}
+    `;
+    
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const userId = userResult[0].id;
+    const today = new Date().toISOString().split('T')[0];
+
+    // Vérifier si les défis existent pour aujourd'hui
+    let challenges = await sql`
+      SELECT * FROM daily_challenges
+      WHERE user_id = ${userId} AND challenge_date = ${today}
+    `;
+
+    // Si pas de défis pour aujourd'hui, les créer
+    if (challenges.length === 0) {
+      await sql`
+        INSERT INTO daily_challenges (user_id, challenge_date)
+        VALUES (${userId}, ${today})
+      `;
+
+      challenges = await sql`
+        SELECT * FROM daily_challenges
+        WHERE user_id = ${userId} AND challenge_date = ${today}
+      `;
+    }
+
+    const challenge = challenges[0];
+
+    return {
+      id: String(challenge.id),
+      date: challenge.challenge_date,
+      challenges: [
+        {
+          id: 'activities',
+          title: 'Complète 3 activités',
+          description: 'Complète 3 activités aujourd\'hui',
+          icon: '🎯',
+          progress: Number(challenge.activities_completed),
+          target: Number(challenge.activities_target),
+          reward: Number(challenge.activities_reward),
+          claimed: Boolean(challenge.activities_claimed),
+          category: 'any'
+        },
+        {
+          id: 'sport',
+          title: 'Fais du sport',
+          description: 'Complète 1 activité de sport',
+          icon: '🏃‍♂️',
+          progress: Number(challenge.sport_completed),
+          target: Number(challenge.sport_target),
+          reward: Number(challenge.sport_reward),
+          claimed: Boolean(challenge.sport_claimed),
+          category: 'sport'
+        },
+        {
+          id: 'health',
+          title: 'Prends soin de ta santé',
+          description: 'Complète 1 activité de santé',
+          icon: '💊',
+          progress: Number(challenge.health_completed),
+          target: Number(challenge.health_target),
+          reward: Number(challenge.health_reward),
+          claimed: Boolean(challenge.health_claimed),
+          category: 'health'
+        }
+      ]
+    };
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des défis journaliers:', error);
+    throw new Error('Impossible de récupérer les défis journaliers');
   }
 }

@@ -57,9 +57,10 @@ export default async function ActivitiesPage() {
         {/* Liste des activités */}
         <div className="space-y-4">
           {activities.map((activity: any) => (
-            <div
+            <Link
               key={activity.id}
-              className={`bg-white rounded-2xl p-5 shadow-md hover:shadow-xl transition-all duration-300 ${
+              href={`/dashboard/activities/${activity.id}`}
+              className={`block bg-white rounded-2xl p-5 shadow-md hover:shadow-xl transition-all duration-300 ${
                 activity.completed_today ? 'border-2 border-green-300' : 'border-2 border-transparent'
               }`}
             >
@@ -88,12 +89,13 @@ export default async function ActivitiesPage() {
                 </div>
 
                 {/* Statut */}
-                <ActivityToggle 
-                  activityId={activity.id.toString()} 
-                  initialCompleted={activity.completed_today || false}
-                />
+                {activity.completed_today ? (
+                  <CheckCircleIcon className="w-8 h-8 text-green-500 shrink-0" />
+                ) : (
+                  <ClockIcon className="w-8 h-8 text-gray-400 shrink-0" />
+                )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

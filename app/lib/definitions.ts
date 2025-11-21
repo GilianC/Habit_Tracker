@@ -86,3 +86,40 @@ export type InvoiceForm = {
   amount: number;
   status: 'pending' | 'paid';
 };
+
+// Types pour HabitFlow
+export type Activity = {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  frequency: string;
+  created_at: string;
+  completed_today?: boolean;
+  streak?: number;
+  category?: string;
+  start_date?: string;
+};
+
+export type Challenge = {
+  id: string;
+  user_challenge_id: string;
+  challenge_id: string;
+  name: string;
+  description: string;
+  goal_type: string;
+  goal_value: number;
+  goal_days?: number;
+  star_reward: number;
+  difficulty: string;
+  icon: string;
+  category: string;
+  status: string;
+  progress: number;
+  start_date: string;
+  end_date: string;
+  completed_at: string;
+  activity_name?: string;
+  activity_icon?: string;
+  activity_color?: string;
+};

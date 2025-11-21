@@ -42,7 +42,7 @@ export default function SideNav() {
         <form
           action={async () => {
             'use server';
-            await signOut({ redirectTo: '/' });
+            await signOut({ redirectTo: '/login' });
           }}
         >
           <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-pink-50 rounded-lg transition-all duration-200 group">

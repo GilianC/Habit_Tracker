@@ -1,13 +1,18 @@
 import { lusitana } from '@/app/ui/fonts';
-import { SparklesIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon, CalendarIcon, StarIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
-export default function WelcomeHeader() {
+interface WelcomeHeaderProps {
+  userStars?: number;
+}
+
+export default function WelcomeHeader({ userStars = 0 }: WelcomeHeaderProps) {
   const currentDate = new Date();
   const timeOfDay = currentDate.getHours() < 12 ? 'Bonjour' : currentDate.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir';
   
   return (
     <div className="mb-8">
-      <div className="relative overflow-hidden bg-linear-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-8 shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-8 shadow-2xl">
         {/* Effet de background */}
         <div className="absolute inset-0 bg-black/5"></div>
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
@@ -15,7 +20,7 @@ export default function WelcomeHeader() {
         
         <div className="relative z-10">
           <div className="flex items-start justify-between">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <SparklesIcon className="w-8 h-8 text-yellow-300" />
                 <span className="text-yellow-300 font-medium text-lg">HabitFlow</span>
@@ -41,12 +46,14 @@ export default function WelcomeHeader() {
                 </span>
               </div>
             </div>
-            
-            {/* Badge de streak */}
-            <div className="bg-white/20 backdrop-blur rounded-2xl p-4 text-center">
-              <div className="text-3xl font-bold text-white">7</div>
-              <div className="text-pink-100 text-sm">jours de suite</div>
-              <div className="text-yellow-300 text-xs">🔥 En feu&nbsp;!</div>
+
+            {/* Affichage des étoiles */}
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 text-center ml-4">
+              <div className="flex items-center gap-2 justify-center mb-1">
+                <StarIconSolid className="w-7 h-7 text-yellow-300" />
+                <span className="text-3xl font-bold text-white">{userStars}</span>
+              </div>
+              <p className="text-xs text-pink-100 font-medium">Étoiles</p>
             </div>
           </div>
         </div>
