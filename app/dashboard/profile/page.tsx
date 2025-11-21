@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Cog6ToothIcon, ArrowRightOnRectangleIcon, FireIcon, ChartBarIcon, TrophyIcon, CalendarIcon, HomeIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { auth } from '@/auth';
+import { auth, signOut } from '@/auth';
 import { redirect } from 'next/navigation';
 
 export default async function ProfilePage() {
@@ -78,13 +78,20 @@ export default async function ProfilePage() {
               <Cog6ToothIcon className="w-5 h-5 text-gray-700" />
               <span className="text-sm font-medium text-gray-700">Paramètres</span>
             </Link>
-            <Link 
-              href="/api/auth/signout"
-              className="flex items-center justify-center gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 rounded-xl transition-colors"
+            <form
+              action={async () => {
+                'use server';
+                await signOut({ redirectTo: '/login' });
+              }}
             >
-              <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-600" />
-              <span className="text-sm font-medium text-red-600">Déconnexion</span>
-            </Link>
+              <button 
+                type="submit"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 rounded-xl transition-colors"
+              >
+                <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-600" />
+                <span className="text-sm font-medium text-red-600">Déconnexion</span>
+              </button>
+            </form>
           </div>
         </div>
 

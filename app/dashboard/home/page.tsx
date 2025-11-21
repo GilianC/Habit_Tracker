@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { PlusIcon, HomeIcon, ChartBarIcon, TrophyIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { StarIcon } from '@heroicons/react/24/solid';
 import { auth } from '@/auth';
-import { fetchDashboardStats, fetchUserActivitiesWithTodayStatus } from '@/app/lib/data';
+import { fetchDashboardStats, fetchUserActivitiesWithTodayStatus, fetchUserStars } from '@/app/lib/data';
 import { redirect } from 'next/navigation';
 import QuickActivityButton from './quick-activity-button';
 
@@ -14,8 +15,11 @@ export default async function HomePage() {
   }
 
   // Récupérer les statistiques et activités
-  const stats = await fetchDashboardStats(session.user.email);
-  const activities = await fetchUserActivitiesWithTodayStatus(session.user.email);
+  const [stats, activities, userStars] = await Promise.all([
+    fetchDashboardStats(session.user.email),
+    fetchUserActivitiesWithTodayStatus(session.user.email),
+    fetchUserStars(session.user.email)
+  ]);
 
   // Calculer la progression hebdomadaire
   const weekProgress = {
@@ -31,13 +35,20 @@ export default async function HomePage() {
   const quickActivities = activities.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-pink-100 via-rose-100 to-pink-200 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-100 to-pink-200 p-4">
       <div className="max-w-md mx-auto space-y-6">
         {/* En-tête avec progression */}
-        <div className="bg-linear-to-br from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-6 shadow-2xl text-white">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl">👋</span>
-            <h1 className="text-xl font-bold">Bonjour !</h1>
+        <div className="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-6 shadow-2xl text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">👋</span>
+              <h1 className="text-xl font-bold">Bonjour !</h1>
+            </div>
+            {/* Badge d'étoiles */}
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2">
+              <StarIcon className="w-5 h-5 text-yellow-300" />
+              <span className="font-bold text-lg">{userStars}</span>
+            </div>
           </div>
           <p className="text-pink-100 text-sm mb-6 capitalize">{weekProgress.today}</p>
 

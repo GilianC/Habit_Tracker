@@ -12,7 +12,9 @@ export default function CreateActivityForm() {
     name: '',
     frequency: 'daily',
     color: '#10B981',
-    icon: '✅'
+    icon: '✅',
+    startDate: new Date().toISOString().split('T')[0],
+    category: 'other'
   });
 
   const [errorMessage, formAction, isPending] = useActionState(
@@ -26,6 +28,17 @@ export default function CreateActivityForm() {
     { value: 'monthly', label: 'Mensuel' }
   ];
 
+  const categoryOptions = [
+    { value: 'sport', label: '🏃‍♂️ Sport', defaultIcon: '🏃‍♂️' },
+    { value: 'health', label: '💊 Santé', defaultIcon: '💊' },
+    { value: 'nutrition', label: '🥗 Nutrition', defaultIcon: '🥗' },
+    { value: 'learning', label: '📚 Apprentissage', defaultIcon: '📚' },
+    { value: 'mindfulness', label: '🧘‍♀️ Bien-être', defaultIcon: '🧘‍♀️' },
+    { value: 'productivity', label: '🎯 Productivité', defaultIcon: '🎯' },
+    { value: 'social', label: '👥 Social', defaultIcon: '👥' },
+    { value: 'other', label: '✨ Autre', defaultIcon: '✨' }
+  ];
+
   const colorOptions = [
     '#EC4899', // Pink 500
     '#F472B6', // Pink 400
@@ -37,7 +50,32 @@ export default function CreateActivityForm() {
     '#6366F1'  // Indigo 500
   ];
 
-  const iconOptions = ['✅', '🏃‍♂️', '📚', '💧', '🥗', '🧘‍♀️', '💊', '🎯', '🎵', '🏠'];
+  // Émojis par catégorie
+  const iconsByCategory: Record<string, string[]> = {
+    sport: ['🏃‍♂️', '⚽', '�️‍♂️', '🏊‍♂️', '🚴‍♂️', '🤸‍♀️', '⛹️‍♂️', '🧗‍♀️', '�🏃‍♀️', '🥊'],
+    health: ['💊', '❤️', '🩺', '💉', '🧬', '🦷', '👁️', '🧪', '⚕️', '🏥'],
+    nutrition: ['🥗', '🍎', '🥑', '🥦', '🍊', '🥕', '🍇', '🥤', '💧', '🍽️'],
+    learning: ['📚', '�', '✍️', '🎓', '�', '📝', '💡', '🔬', '🎯', '📊'],
+    mindfulness: ['🧘‍♀️', '🕉️', '☮️', '🌸', '🌺', '🍃', '🌿', '✨', '🙏', '�‍♀️'],
+    productivity: ['🎯', '✅', '📋', '💼', '⏰', '📅', '🔔', '💪', '🚀', '⭐'],
+    social: ['👥', '💬', '👫', '🤝', '👪', '💕', '🎉', '📱', '☕', '🎊'],
+    other: ['✨', '⭐', '🌟', '💫', '🔥', '💎', '🎨', '🎵', '🌈', '�']
+  };
+
+  // Émojis disponibles selon la catégorie sélectionnée
+  const iconOptions = iconsByCategory[formData.category] || iconsByCategory.other;
+
+  // Fonction pour gérer le changement de catégorie
+  const handleCategoryChange = (newCategory: string) => {
+    const selectedCategory = categoryOptions.find(cat => cat.value === newCategory);
+    const newIcon = selectedCategory?.defaultIcon || '✨';
+    
+    setFormData({
+      ...formData,
+      category: newCategory,
+      icon: newIcon
+    });
+  };
 
   return (
     <form action={formAction} className="space-y-6">
@@ -83,6 +121,45 @@ export default function CreateActivityForm() {
           </select>
         </div>
 
+        {/* Catégorie */}
+        <div className="mb-4">
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+            Catégorie
+          </label>
+          <select
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+          >
+            {categoryOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-gray-500">
+            Les émojis disponibles changent selon la catégorie choisie
+          </p>
+        </div>
+
+        {/* Date de début */}
+        <div className="mb-4">
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+            Date de début
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            value={formData.startDate}
+            onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            required
+          />
+        </div>
+
         {/* Couleur */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -107,7 +184,7 @@ export default function CreateActivityForm() {
         {/* Icône */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Icône
+            Icône ({categoryOptions.find(c => c.value === formData.category)?.label.split(' ')[1]})
           </label>
           <div className="grid grid-cols-5 gap-2">
             {iconOptions.map((icon, index) => (
@@ -115,7 +192,7 @@ export default function CreateActivityForm() {
                 key={`${icon}-${index}`}
                 type="button"
                 onClick={() => setFormData({...formData, icon})}
-                className={`p-2 text-2xl border rounded-md ${
+                className={`p-2 text-2xl border rounded-md transition-colors ${
                   formData.icon === icon 
                     ? 'border-pink-500 bg-pink-50' 
                     : 'border-gray-300 hover:border-gray-400'
@@ -143,7 +220,7 @@ export default function CreateActivityForm() {
                 {formData.name || 'Nom de l\'activité'}
               </p>
               <p className="text-sm text-gray-600">
-                {frequencyOptions.find(opt => opt.value === formData.frequency)?.label}
+                {frequencyOptions.find(opt => opt.value === formData.frequency)?.label} • {categoryOptions.find(c => c.value === formData.category)?.label.split(' ')[1]}
               </p>
             </div>
           </div>

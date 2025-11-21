@@ -109,6 +109,8 @@ export async function createActivity(
     const frequency = formData.get('frequency') as string;
     const color = formData.get('color') as string || '#10B981';
     const icon = formData.get('icon') as string || '✅';
+    const startDate = formData.get('startDate') as string || new Date().toISOString().split('T')[0];
+    const category = formData.get('category') as string || 'other';
 
     // Validation
     if (!name || name.trim().length === 0) {
@@ -121,8 +123,8 @@ export async function createActivity(
 
     // Créer l'activité
     await sql`
-      INSERT INTO activities (user_id, name, frequency, color, icon, created_at)
-      VALUES (${userId}, ${name}, ${frequency}, ${color}, ${icon}, ${new Date().toISOString()})
+      INSERT INTO activities (user_id, name, frequency, color, icon, start_date, category, created_at)
+      VALUES (${userId}, ${name}, ${frequency}, ${color}, ${icon}, ${startDate}, ${category}, ${new Date().toISOString()})
     `;
 
     console.log('✅ Activité créée avec succès:', name);
@@ -167,6 +169,23 @@ export async function deleteActivity(id: string, userId: string) {
 export async function logActivity(activityId: string, isDone: boolean) {
   const today = new Date().toISOString().split('T')[0];
   
+  // Récupérer la session pour obtenir l'utilisateur
+  const session = await auth();
+  if (!session?.user?.email) {
+    throw new Error('Non authentifié');
+  }
+
+  // Récupérer l'utilisateur et l'activité
+  const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email}`;
+  const activityResult = await sql`SELECT category FROM activities WHERE id = ${activityId}`;
+  
+  if (userResult.length === 0 || activityResult.length === 0) {
+    throw new Error('Utilisateur ou activité non trouvé');
+  }
+
+  const userId = userResult[0].id;
+  const activityCategory = activityResult[0].category;
+  
   // Vérifier si un log existe déjà pour aujourd'hui
   const existingLog = await sql`
     SELECT id FROM activity_logs 
@@ -188,7 +207,68 @@ export async function logActivity(activityId: string, isDone: boolean) {
     `;
   }
 
+  // Mettre à jour les défis journaliers si l'activité est complétée
+  if (isDone) {
+    // S'assurer que les défis journaliers existent pour aujourd'hui
+    const dailyChallengeExists = await sql`
+      SELECT id FROM daily_challenges
+      WHERE user_id = ${userId} AND challenge_date = ${today}
+    `;
+
+    if (dailyChallengeExists.length === 0) {
+      await sql`
+        INSERT INTO daily_challenges (user_id, challenge_date)
+        VALUES (${userId}, ${today})
+      `;
+    }
+
+    // Compter le nombre d'activités complétées aujourd'hui
+    const activitiesCount = await sql`
+      SELECT COUNT(DISTINCT al.activity_id) as count
+      FROM activity_logs al
+      INNER JOIN activities a ON al.activity_id = a.id
+      WHERE a.user_id = ${userId}
+      AND al.date = ${today}
+      AND al.is_done = true
+    `;
+
+    // Compter les activités de sport complétées aujourd'hui
+    const sportCount = await sql`
+      SELECT COUNT(DISTINCT al.activity_id) as count
+      FROM activity_logs al
+      INNER JOIN activities a ON al.activity_id = a.id
+      WHERE a.user_id = ${userId}
+      AND a.category = 'sport'
+      AND al.date = ${today}
+      AND al.is_done = true
+    `;
+
+    // Compter les activités de santé complétées aujourd'hui
+    const healthCount = await sql`
+      SELECT COUNT(DISTINCT al.activity_id) as count
+      FROM activity_logs al
+      INNER JOIN activities a ON al.activity_id = a.id
+      WHERE a.user_id = ${userId}
+      AND a.category = 'health'
+      AND al.date = ${today}
+      AND al.is_done = true
+    `;
+
+    // Mettre à jour les défis journaliers
+    await sql`
+      UPDATE daily_challenges
+      SET 
+        activities_completed = ${activitiesCount[0].count},
+        sport_completed = ${sportCount[0].count},
+        health_completed = ${healthCount[0].count},
+        updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = ${userId}
+      AND challenge_date = ${today}
+    `;
+  }
+
   revalidatePath('/dashboard');
+  revalidatePath('/dashboard/challenges');
 }
 
 // Authentification
@@ -226,4 +306,262 @@ export async function authenticate(
   
   // Redirection manuelle APRÈS la connexion réussie
   redirect('/dashboard/home');
+}
+
+// Actions pour les défis
+export async function acceptChallenge(challengeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    // Récupérer l'ID de l'utilisateur
+    const userResult = await sql`
+      SELECT id FROM users WHERE email = ${session.user.email}
+    `;
+    
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const userId = userResult[0].id;
+
+    // Vérifier si le défi existe et est actif
+    const challengeResult = await sql`
+      SELECT id, goal_type FROM challenges 
+      WHERE id = ${challengeId} AND is_active = true
+    `;
+
+    if (challengeResult.length === 0) {
+      throw new Error('Défi non trouvé ou inactif');
+    }
+
+    // Vérifier si l'utilisateur n'a pas déjà accepté ce défi
+    const existingResult = await sql`
+      SELECT id FROM user_challenges
+      WHERE user_id = ${userId} AND challenge_id = ${challengeId}
+    `;
+
+    if (existingResult.length > 0) {
+      throw new Error('Défi déjà accepté');
+    }
+
+    // Accepter le défi
+    await sql`
+      INSERT INTO user_challenges (user_id, challenge_id, status, progress, start_date)
+      VALUES (${userId}, ${challengeId}, 'in_progress', 0, ${new Date().toISOString().split('T')[0]})
+    `;
+
+    console.log('✅ Défi accepté avec succès');
+    revalidatePath('/dashboard/challenges');
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'acceptation du défi:', error);
+    throw error;
+  }
+}
+
+export async function completeChallenge(userChallengeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    // Récupérer le user_challenge
+    const userChallengeResult = await sql`
+      SELECT 
+        uc.*,
+        c.star_reward,
+        c.goal_value,
+        u.id as user_id,
+        u.stars
+      FROM user_challenges uc
+      INNER JOIN challenges c ON uc.challenge_id = c.id
+      INNER JOIN users u ON uc.user_id = u.id
+      WHERE uc.id = ${userChallengeId} AND u.email = ${session.user.email}
+    `;
+
+    if (userChallengeResult.length === 0) {
+      throw new Error('Défi non trouvé');
+    }
+
+    const userChallenge = userChallengeResult[0];
+
+    // Vérifier que le défi est complété
+    if (userChallenge.progress < userChallenge.goal_value) {
+      throw new Error('Défi pas encore complété');
+    }
+
+    // Marquer le défi comme complété et ajouter les étoiles
+    await sql`
+      UPDATE user_challenges
+      SET status = 'completed', completed_at = ${new Date().toISOString()}
+      WHERE id = ${userChallengeId}
+    `;
+
+    await sql`
+      UPDATE users
+      SET stars = stars + ${userChallenge.star_reward}
+      WHERE id = ${userChallenge.user_id}
+    `;
+
+    console.log(`✅ Défi complété! +${userChallenge.star_reward} étoiles`);
+    revalidatePath('/dashboard/challenges');
+    revalidatePath('/dashboard/badges');
+  } catch (error) {
+    console.error('❌ Erreur lors de la complétion du défi:', error);
+    throw error;
+  }
+}
+
+// Réclamer la récompense d'un défi journalier
+export async function claimDailyChallenge(challengeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non authentifié');
+    }
+
+    const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email}`;
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const userId = userResult[0].id;
+    const today = new Date().toISOString().split('T')[0];
+
+    // Récupérer les défis journaliers
+    const dailyChallenge = await sql`
+      SELECT * FROM daily_challenges
+      WHERE user_id = ${userId} AND challenge_date = ${today}
+    `;
+
+    if (dailyChallenge.length === 0) {
+      throw new Error('Défi journalier non trouvé');
+    }
+
+    const challenge = dailyChallenge[0];
+
+    // Déterminer quel défi est réclamé et vérifier s'il est complété
+    let reward = 0;
+    let updateField = '';
+
+    switch (challengeId) {
+      case 'activities':
+        if (challenge.activities_claimed) throw new Error('Récompense déjà réclamée');
+        if (challenge.activities_completed < challenge.activities_target) {
+          throw new Error('Défi pas encore complété');
+        }
+        reward = challenge.activities_reward;
+        updateField = 'activities_claimed = true';
+        break;
+
+      case 'sport':
+        if (challenge.sport_claimed) throw new Error('Récompense déjà réclamée');
+        if (challenge.sport_completed < challenge.sport_target) {
+          throw new Error('Défi pas encore complété');
+        }
+        reward = challenge.sport_reward;
+        updateField = 'sport_claimed = true';
+        break;
+
+      case 'health':
+        if (challenge.health_claimed) throw new Error('Récompense déjà réclamée');
+        if (challenge.health_completed < challenge.health_target) {
+          throw new Error('Défi pas encore complété');
+        }
+        reward = challenge.health_reward;
+        updateField = 'health_claimed = true';
+        break;
+
+      default:
+        throw new Error('Défi invalide');
+    }
+
+    // Marquer le défi comme réclamé
+    await sql.unsafe(`
+      UPDATE daily_challenges
+      SET ${updateField}, updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = ${userId} AND challenge_date = '${today}'
+    `);
+
+    // Ajouter les étoiles à l'utilisateur
+    await sql`
+      UPDATE users
+      SET stars = stars + ${reward}
+      WHERE id = ${userId}
+    `;
+
+    console.log(`✅ Récompense réclamée! +${reward} étoiles`);
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/challenges');
+  } catch (error) {
+    console.error('❌ Erreur lors de la réclamation:', error);
+    throw error;
+  }
+}
+
+export async function unlockBadge(badgeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    // Récupérer l'utilisateur et le badge
+    const userResult = await sql`
+      SELECT id, stars FROM users WHERE email = ${session.user.email}
+    `;
+
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const user = userResult[0];
+
+    const badgeResult = await sql`
+      SELECT id, star_cost, title FROM badges WHERE id = ${badgeId}
+    `;
+
+    if (badgeResult.length === 0) {
+      throw new Error('Badge non trouvé');
+    }
+
+    const badge = badgeResult[0];
+
+    // Vérifier si l'utilisateur a assez d'étoiles
+    if (user.stars < badge.star_cost) {
+      throw new Error('Pas assez d\'étoiles');
+    }
+
+    // Vérifier si le badge n'est pas déjà débloqué
+    const alreadyUnlocked = await sql`
+      SELECT id FROM user_badges
+      WHERE user_id = ${user.id} AND badge_id = ${badgeId}
+    `;
+
+    if (alreadyUnlocked.length > 0) {
+      throw new Error('Badge déjà débloqué');
+    }
+
+    // Débloquer le badge et retirer les étoiles
+    await sql`
+      INSERT INTO user_badges (user_id, badge_id)
+      VALUES (${user.id}, ${badgeId})
+    `;
+
+    await sql`
+      UPDATE users
+      SET stars = stars - ${badge.star_cost}
+      WHERE id = ${user.id}
+    `;
+
+    console.log(`🏆 Badge débloqué: ${badge.title} (-${badge.star_cost} étoiles)`);
+    revalidatePath('/dashboard/badges');
+    revalidatePath('/dashboard/challenges');
+  } catch (error) {
+    console.error('❌ Erreur lors du déblocage du badge:', error);
+    throw error;
+  }
 }
