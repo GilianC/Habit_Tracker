@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { createChallenge } from '@/app/lib/actions';
+// import { createChallenge } from '@/app/lib/actions'; // Fonction supprimée - système remplacé par daily challenges
 
 interface Activity {
   id: string;
@@ -49,14 +49,18 @@ export default function CreateChallengeModal({ activities, onClose }: CreateChal
       form.append('name', formData.name || `Défi ${selectedDifficulty.label}`);
       form.append('description', formData.description || `Complète ${selectedDifficulty.days} jours d'activité`);
 
-      const result = await createChallenge(undefined, form);
+      // const result = await createChallenge(undefined, form);
       
-      if (result) {
-        setError(result);
-        setIsSubmitting(false);
-      } else {
-        onClose();
-      }
+      // Fonction temporairement désactivée - système remplacé par daily challenges
+      setError('Cette fonctionnalité a été remplacée par les défis quotidiens');
+      setIsSubmitting(false);
+      
+      // if (result) {
+      //   setError(result);
+      //   setIsSubmitting(false);
+      // } else {
+      //   onClose();
+      // }
     } catch (err) {
       setError('Une erreur est survenue');
       setIsSubmitting(false);

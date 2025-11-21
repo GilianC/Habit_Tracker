@@ -3,22 +3,7 @@
 import { FireIcon, CheckCircleIcon, ClockIcon, StarIcon } from '@heroicons/react/24/outline';
 import { completeChallenge } from '@/app/lib/actions';
 import { useState } from 'react';
-
-interface Challenge {
-  id: string;
-  name: string;
-  description: string;
-  goal_days: number;
-  star_reward: number;
-  difficulty: string;
-  status: string;
-  start_date: string;
-  end_date: string;
-  progress: number;
-  activity_name: string;
-  activity_icon: string;
-  activity_color: string;
-}
+import { Challenge } from '@/app/lib/definitions';
 
 interface ChallengesListProps {
   challenges: Challenge[];
@@ -85,8 +70,9 @@ export default function ChallengesList({ challenges }: ChallengesListProps) {
           </h2>
           <div className="space-y-3">
             {activeChallenges.map(challenge => {
-              const progressPercent = (challenge.progress / challenge.goal_days) * 100;
-              const isCompletable = challenge.progress >= challenge.goal_days;
+              const goalDays = challenge.goal_days || 1;
+              const progressPercent = (challenge.progress / goalDays) * 100;
+              const isCompletable = challenge.progress >= goalDays;
 
               return (
                 <div

@@ -3,18 +3,7 @@
 import { StarIcon, FireIcon } from '@heroicons/react/24/outline';
 import { acceptChallenge } from '@/app/lib/actions';
 import { useState } from 'react';
-
-interface Challenge {
-  id: string;
-  name: string;
-  description: string;
-  goal_type: string;
-  goal_value: number;
-  star_reward: number;
-  difficulty: string;
-  icon: string;
-  category: string;
-}
+import { Challenge } from '@/app/lib/definitions';
 
 interface ChallengesAvailableProps {
   challenges: Challenge[];

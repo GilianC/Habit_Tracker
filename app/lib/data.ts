@@ -7,6 +7,7 @@ import {
   LatestInvoiceRaw,
   Revenue,
   Activity,
+  Challenge,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -484,7 +485,7 @@ export async function fetchAllChallenges() {
 }
 
 // Récupérer les défis de l'utilisateur (acceptés/complétés)
-export async function fetchUserChallenges(userEmail: string) {
+export async function fetchUserChallenges(userEmail: string): Promise<Challenge[]> {
   try {
     const result = await sql`
       SELECT 
@@ -517,12 +518,14 @@ export async function fetchUserChallenges(userEmail: string) {
     `;
 
     return result.map(row => ({
+      id: String(row.user_challenge_id),
       user_challenge_id: String(row.user_challenge_id),
       challenge_id: String(row.challenge_id),
       name: row.name as string,
       description: row.description as string,
       goal_type: row.goal_type as string,
       goal_value: Number(row.goal_value),
+      goal_days: undefined,
       star_reward: Number(row.star_reward),
       difficulty: row.difficulty as string,
       icon: row.icon as string,
@@ -531,7 +534,10 @@ export async function fetchUserChallenges(userEmail: string) {
       progress: Number(row.progress),
       start_date: row.start_date as string,
       end_date: row.end_date as string,
-      completed_at: row.completed_at as string
+      completed_at: row.completed_at as string,
+      activity_name: undefined,
+      activity_icon: undefined,
+      activity_color: undefined,
     }));
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des défis utilisateur:', error);
