@@ -13,14 +13,14 @@ export const authConfig = {
       // Protéger le dashboard - rediriger vers login si non connecté
       if (isOnDashboard) {
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+        // Redirection explicite avec URL absolue
+        return Response.redirect(new URL('/login', nextUrl.origin));
       }
       
-      // Permettre l'accès aux pages login/signup même si connecté (pour tests)
-      // En production, vous pouvez décommenter cette ligne pour rediriger vers dashboard
-      // if (isOnAuthPage && isLoggedIn) {
-      //   return Response.redirect(new URL('/dashboard/home', nextUrl));
-      // }
+      // Rediriger vers dashboard si déjà connecté et sur page auth
+      if (isOnAuthPage && isLoggedIn) {
+        return Response.redirect(new URL('/dashboard/home', nextUrl.origin));
+      }
       
       return true;
     },

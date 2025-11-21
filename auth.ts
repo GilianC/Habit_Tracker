@@ -31,6 +31,7 @@ export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   trustHost: true, // Important pour Vercel
   useSecureCookies: process.env.NODE_ENV === 'production',
+  secret: process.env.NEXTAUTH_SECRET, // Secret pour signer les tokens
   providers: [
     Credentials({
       async authorize(credentials) {
