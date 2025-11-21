@@ -7,7 +7,7 @@ export default function HabitLogo() {
       className={`${lusitana.className} flex flex-row items-center leading-none text-white`}
     >
       <CheckCircleIcon className="h-12 w-12 mr-3" />
-      <p className="text-[44px] font-bold">HabitTracker</p>
+      <p className="text-[44px] font-bold">HabitFlow</p>
     </div>
   );
 }

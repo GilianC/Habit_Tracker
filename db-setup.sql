@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role VARCHAR(50) DEFAULT 'user', -- 'user' ou 'admin'
+  stars INTEGER DEFAULT 0, -- Étoiles gagnées via les défis
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS activities (
   frequency VARCHAR(50) NOT NULL DEFAULT 'daily', -- 'daily', 'weekly', 'monthly'
   color VARCHAR(7) DEFAULT '#3B82F6', -- Couleur hexadécimale
   icon VARCHAR(10) DEFAULT '✅', -- Emoji
+  start_date DATE DEFAULT CURRENT_DATE, -- Date de début de l'activité
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,14 +37,17 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 -- Table des défis (V2)
 CREATE TABLE IF NOT EXISTS challenges (
   id SERIAL PRIMARY KEY,
-  challenger_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  friend_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL, -- Nom du défi
+  description TEXT, -- Description du défi
   activity_id INTEGER REFERENCES activities(id) ON DELETE CASCADE,
-  status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'accepted', 'completed', 'cancelled'
-  start_date DATE,
+  goal_days INTEGER NOT NULL, -- Nombre de jours à compléter
+  star_reward INTEGER DEFAULT 1, -- Étoiles gagnées à la complétion
+  difficulty VARCHAR(50) DEFAULT 'easy', -- 'easy', 'medium', 'hard'
+  status VARCHAR(50) DEFAULT 'active', -- 'active', 'completed', 'failed'
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE, -- Propriétaire du défi
+  start_date DATE DEFAULT CURRENT_DATE,
   end_date DATE,
-  challenger_score INTEGER DEFAULT 0,
-  friend_score INTEGER DEFAULT 0,
+  progress INTEGER DEFAULT 0, -- Jours complétés
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -51,9 +56,10 @@ CREATE TABLE IF NOT EXISTS badges (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   description TEXT,
-  condition_type VARCHAR(100) NOT NULL, -- 'streak', 'total_completed', 'days_active'
-  condition_value INTEGER NOT NULL,
   icon VARCHAR(10) DEFAULT '🏆',
+  star_cost INTEGER NOT NULL, -- Coût en étoiles pour débloquer
+  rarity VARCHAR(50) DEFAULT 'common', -- 'common', 'rare', 'epic', 'legendary'
+  category VARCHAR(100), -- 'streak', 'completion', 'challenge', 'special'
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -62,7 +68,7 @@ CREATE TABLE IF NOT EXISTS user_badges (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   badge_id INTEGER REFERENCES badges(id) ON DELETE CASCADE,
-  earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(user_id, badge_id)
 );
 

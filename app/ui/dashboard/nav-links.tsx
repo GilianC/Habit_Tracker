@@ -6,6 +6,7 @@ import {
   UserGroupIcon,
   Cog6ToothIcon,
   SparklesIcon,
+  CalendarIcon,
 } from '@heroicons/react/24/outline';
 import {
   HomeIcon as HomeIconSolid,
@@ -14,6 +15,7 @@ import {
   UserGroupIcon as UserGroupIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
   SparklesIcon as SparklesIconSolid,
+  CalendarIcon as CalendarIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -36,6 +38,14 @@ const links = [
     iconSolid: CheckCircleIconSolid,
     color: 'rose',
     description: 'Gérer mes routines'
+  },
+  {
+    name: 'Calendrier',
+    href: '/dashboard/calendar',
+    icon: CalendarIcon,
+    iconSolid: CalendarIconSolid,
+    color: 'pink',
+    description: 'Vue calendrier'
   },
   { 
     name: 'Analytics', 
