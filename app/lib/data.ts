@@ -687,3 +687,40 @@ export async function fetchTodayDailyChallenges(userEmail: string) {
     throw new Error('Impossible de récupérer les défis journaliers');
   }
 }
+
+// Récupérer les informations de level et XP de l'utilisateur
+export async function fetchUserLevelInfo(userEmail: string) {
+  try {
+    const result = await sql`
+      SELECT 
+        u.id,
+        u.name,
+        u.email,
+        u.stars,
+        u.xp,
+        u.level,
+        (SELECT COUNT(*) FROM user_badges WHERE user_id = u.id) as total_badges
+      FROM users u
+      WHERE u.email = ${userEmail}
+    `;
+
+    if (result.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const user = result[0];
+    
+    return {
+      id: String(user.id),
+      name: user.name,
+      email: user.email,
+      stars: Number(user.stars) || 0,
+      xp: Number(user.xp) || 0,
+      level: Number(user.level) || 1,
+      totalBadges: Number(user.total_badges) || 0
+    };
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des infos de level:', error);
+    throw new Error('Impossible de récupérer les informations de level');
+  }
+}

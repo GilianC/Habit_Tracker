@@ -17,6 +17,9 @@ model User {
   email         String    @unique
   passwordHash  String    @map("password_hash")
   role          String    @default("user")
+  stars         Int       @default(0)
+  level         Int       @default(1)
+  xp            Int       @default(0)
   createdAt     DateTime  @default(now()) @map("created_at")
   lastLogin     DateTime  @default(now()) @map("last_login")
 
@@ -30,19 +33,23 @@ model User {
   motivationsSent   Motivation[] @relation("SentMotivations")
   motivationsReceived Motivation[] @relation("ReceivedMotivations")
   userConnections   UserConnection[]
+  dailyChallenges   DailyChallenge[] @relation("DailyChallenges")
+  userChallenges    UserChallenge[] @relation("UserChallenges")
 
   @@map("users")
 }
 
 // Table des activités (habitudes)
 model Activity {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
   name      String
-  frequency String   @default("daily")
-  color     String   @default("#3B82F6")
-  icon      String   @default("✅")
-  createdAt DateTime @default(now()) @map("created_at")
+  frequency String    @default("daily")
+  color     String    @default("#3B82F6")
+  icon      String    @default("✅")
+  category  String    @default("other")
+  startDate DateTime? @map("start_date") @db.Date
+  createdAt DateTime  @default(now()) @map("created_at")
 
   // Relations
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -187,4 +194,58 @@ model UserConnection {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_connections")
+}
+
+// Table des défis quotidiens par utilisateur
+model DailyChallenge {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @map("user_id")
+  challengeDate      DateTime @map("challenge_date") @db.Date
+  
+  // Défi activités
+  activitiesCompleted Int      @default(0) @map("activities_completed")
+  activitiesTarget    Int      @default(3) @map("activities_target")
+  activitiesReward    Int      @default(5) @map("activities_reward")
+  activitiesClaimed   Boolean  @default(false) @map("activities_claimed")
+  
+  // Défi sport
+  sportCompleted     Int      @default(0) @map("sport_completed")
+  sportTarget        Int      @default(1) @map("sport_target")
+  sportReward        Int      @default(3) @map("sport_reward")
+  sportClaimed       Boolean  @default(false) @map("sport_claimed")
+  
+  // Défi santé
+  healthCompleted    Int      @default(0) @map("health_completed")
+  healthTarget       Int      @default(1) @map("health_target")
+  healthReward       Int      @default(3) @map("health_reward")
+  healthClaimed      Boolean  @default(false) @map("health_claimed")
+  
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation("DailyChallenges", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeDate])
+  @@index([userId])
+  @@index([challengeDate])
+  @@map("daily_challenges")
+}
+
+// Table de suivi des défis utilisateurs
+model UserChallenge {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  challengeId     Int      @map("challenge_id")
+  status          String   @default("active")
+  progress        Int      @default(0)
+  completed       Boolean  @default(false)
+  starReward      Int      @default(5) @map("star_reward")
+  completedAt     DateTime? @map("completed_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user      User      @relation("UserChallenges", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_challenges")
 }

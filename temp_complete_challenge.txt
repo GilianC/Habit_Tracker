@@ -1,0 +1,50 @@
+// Cette partie sera ajoutée à actions.ts
+
+export async function completeChallenge(userChallengeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    const userChallengeResult = await sql`
+      SELECT 
+        uc.*,
+        c.star_reward,
+        c.goal_value,
+        u.id as user_id,
+        u.stars
+      FROM user_challenges uc
+      INNER JOIN challenges c ON uc.challenge_id = c.id
+      INNER JOIN users u ON uc.user_id = u.id
+      WHERE uc.id = ${userChallengeId} AND u.email = ${session.user.email}
+    `;
+
+    if (userChallengeResult.length === 0) {
+      throw new Error('Défi non trouvé');
+    }
+
+    const userChallenge = userChallengeResult[0];
+
+    if (userChallenge.progress < userChallenge.goal_value) {
+      throw new Error('Défi pas encore complété');
+    }
+
+    await sql`
+      UPDATE user_challenges
+      SET status = 'completed', completed_at = ${new Date().toISOString()}
+      WHERE id = ${userChallengeId}
+    `;
+
+    const { addUserXp } = await import('./level-actions');
+    await addUserXp(session.user.email, userChallenge.star_reward);
+
+    console.log(`✅ Défi complété! +${userChallenge.star_reward} étoiles/XP`);
+    revalidatePath('/dashboard/challenges');
+    revalidatePath('/dashboard/badges');
+    revalidatePath('/dashboard/profile');
+  } catch (error) {
+    console.error('❌ Erreur lors de la complétion du défi:', error);
+    throw error;
+  }
+}

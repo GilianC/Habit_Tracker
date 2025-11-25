@@ -260,7 +260,8 @@ export async function logActivity(activityId: string, isDone: boolean) {
       SET 
         activities_completed = ${activitiesCount[0].count},
         sport_completed = ${sportCount[0].count},
-        health_completed = ${healthCount[0].count}
+        health_completed = ${healthCount[0].count},
+        updated_at = CURRENT_TIMESTAMP
       WHERE user_id = ${userId}
       AND challenge_date = ${today}
     `;
@@ -364,10 +365,10 @@ export async function completeChallenge(userChallengeId: string) {
   try {
     const session = await auth();
     if (!session?.user?.email) {
-      throw new Error('Non connectï¿½');
+      throw new Error('Non connecté');
     }
 
-    // Rï¿½cupï¿½rer le user_challenge
+    // Récupérer le user_challenge
     const userChallengeResult = await sql`
       SELECT 
         uc.*,
@@ -382,175 +383,33 @@ export async function completeChallenge(userChallengeId: string) {
     `;
 
     if (userChallengeResult.length === 0) {
-      throw new Error('Dï¿½fi non trouvï¿½');
+      throw new Error('Défi non trouvé');
     }
 
     const userChallenge = userChallengeResult[0];
 
-    // Vï¿½rifier que le dï¿½fi est complï¿½tï¿½
+    // Vérifier que le défi est complété
     if (userChallenge.progress < userChallenge.goal_value) {
-      throw new Error('Dï¿½fi pas encore complï¿½tï¿½');
+      throw new Error('Défi pas encore complété');
     }
 
-    // Marquer le dï¿½fi comme complï¿½tï¿½
+    // Marquer le défi comme complété
     await sql`
       UPDATE user_challenges
       SET status = 'completed', completed_at = ${new Date().toISOString()}
       WHERE id = ${userChallengeId}
     `;
 
-    // Ajouter XP et stars avec le systï¿½me de level
+    // Ajouter XP et stars avec le système de level
     const { addUserXp } = await import('./level-actions');
     await addUserXp(session.user.email, userChallenge.star_reward);
 
-    console.log(` Dï¿½fi complï¿½tï¿½! +${userChallenge.star_reward} ï¿½toiles/XP`);
+    console.log(` Défi complété! +${userChallenge.star_reward} étoiles/XP`);
     revalidatePath('/dashboard/challenges');
     revalidatePath('/dashboard/badges');
     revalidatePath('/dashboard/profile');
   } catch (error) {
-    console.error(' Erreur lors de la complï¿½tion du dï¿½fi:', error);
-    throw error;
-  }
-}
-
-// RÃ©clamer la rÃ©compense d'un dÃ©fi journalier
-export async function claimDailyChallenge(challengeId: string) {
-  try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      throw new Error('Non connectÃ©');
-    }
-
-    const userResult = await sql`
-      SELECT id FROM users WHERE email = ${session.user.email}
-    `;
-
-    if (userResult.length === 0) {
-      throw new Error('Utilisateur non trouvÃ©');
-    }
-
-    const userId = userResult[0].id;
-    const today = new Date().toISOString().split('T')[0];
-
-    const challengeResult = await sql`
-      SELECT * FROM daily_challenges
-      WHERE user_id = ${userId}
-      AND challenge_date = ${today}
-    `;
-
-    if (challengeResult.length === 0) {
-      throw new Error('DÃ©fi non trouvÃ©');
-    }
-
-    const challenge = challengeResult[0];
-    const claimedKey = `${challengeId}_claimed`;
-    const completedKey = `${challengeId}_completed`;
-    const targetKey = `${challengeId}_target`;
-    const rewardKey = `${challengeId}_reward`;
-
-    if (challenge[claimedKey]) {
-      throw new Error('RÃ©compense dÃ©jÃ  rÃ©clamÃ©e');
-    }
-
-    if (challenge[completedKey] < challenge[targetKey]) {
-      throw new Error('DÃ©fi pas encore complÃ©tÃ©');
-    }
-
-    const reward = Number(challenge[rewardKey]);
-
-    // Mettre Ã  jour le champ claimed en fonction du challenge
-    if (challengeId === 'activities') {
-      await sql`
-        UPDATE daily_challenges
-        SET activities_claimed = true
-        WHERE user_id = ${userId}
-        AND challenge_date = ${today}
-      `;
-    } else if (challengeId === 'sport') {
-      await sql`
-        UPDATE daily_challenges
-        SET sport_claimed = true
-        WHERE user_id = ${userId}
-        AND challenge_date = ${today}
-      `;
-    } else if (challengeId === 'health') {
-      await sql`
-        UPDATE daily_challenges
-        SET health_claimed = true
-        WHERE user_id = ${userId}
-        AND challenge_date = ${today}
-      `;
-    }
-
-    const { addUserXp } = await import('./level-actions');
-    await addUserXp(session.user.email, reward);
-
-    console.log(`ğŸ RÃ©compense rÃ©clamÃ©e! +${reward} Ã©toiles`);
-    revalidatePath('/dashboard');
-    revalidatePath('/dashboard/challenges');
-  } catch (error) {
-    console.error('âŒ Erreur lors de la rÃ©clamation:', error);
-    throw error;
-  }
-}
-
-// DÃ©bloquer un badge avec des Ã©toiles
-export async function unlockBadge(badgeId: string) {
-  try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      throw new Error('Non connectÃ©');
-    }
-
-    const userResult = await sql`
-      SELECT id, stars FROM users WHERE email = ${session.user.email}
-    `;
-
-    if (userResult.length === 0) {
-      throw new Error('Utilisateur non trouvÃ©');
-    }
-
-    const user = userResult[0];
-
-    const badgeResult = await sql`
-      SELECT id, star_cost, title FROM badges WHERE id = ${badgeId}
-    `;
-
-    if (badgeResult.length === 0) {
-      throw new Error('Badge non trouvÃ©');
-    }
-
-    const badge = badgeResult[0];
-
-    if (user.stars < badge.star_cost) {
-      throw new Error("Pas assez d'Ã©toiles");
-    }
-
-    const alreadyUnlocked = await sql`
-      SELECT id FROM user_badges
-      WHERE user_id = ${user.id} AND badge_id = ${badgeId}
-    `;
-
-    if (alreadyUnlocked.length > 0) {
-      throw new Error('Badge dÃ©jÃ  dÃ©bloquÃ©');
-    }
-
-    await sql`
-      INSERT INTO user_badges (user_id, badge_id)
-      VALUES (${user.id}, ${badgeId})
-    `;
-
-    await sql`
-      UPDATE users
-      SET stars = stars - ${badge.star_cost}
-      WHERE id = ${user.id}
-    `;
-
-    console.log(`ğŸ† Badge dÃ©bloquÃ©: ${badge.title} (-${badge.star_cost} Ã©toiles)`);
-    revalidatePath('/dashboard/badges');
-    revalidatePath('/dashboard/challenges');
-  } catch (error) {
-    console.error('âŒ Erreur lors du dÃ©blocage du badge:', error);
+    console.error(' Erreur lors de la complétion du défi:', error);
     throw error;
   }
 }

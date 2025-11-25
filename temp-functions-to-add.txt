@@ -1,0 +1,125 @@
+
+// Réclamer la récompense d'un défi journalier
+export async function claimDailyChallenge(challengeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    const userResult = await sql`
+      SELECT id FROM users WHERE email = ${session.user.email}
+    `;
+
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const userId = userResult[0].id;
+    const today = new Date().toISOString().split('T')[0];
+
+    const challengeResult = await sql`
+      SELECT * FROM daily_challenges
+      WHERE user_id = ${userId}
+      AND challenge_date = ${today}
+    `;
+
+    if (challengeResult.length === 0) {
+      throw new Error('Défi non trouvé');
+    }
+
+    const challenge = challengeResult[0];
+    const claimedKey = `${challengeId}_claimed`;
+    const completedKey = `${challengeId}_completed`;
+    const targetKey = `${challengeId}_target`;
+    const rewardKey = `${challengeId}_reward`;
+
+    if (challenge[claimedKey]) {
+      throw new Error('Récompense déjà réclamée');
+    }
+
+    if (challenge[completedKey] < challenge[targetKey]) {
+      throw new Error('Défi pas encore complété');
+    }
+
+    const reward = Number(challenge[rewardKey]);
+
+    await sql`
+      UPDATE daily_challenges
+      SET ${sql(claimedKey)} = true
+      WHERE user_id = ${userId}
+      AND challenge_date = ${today}
+    `;
+
+    const { addUserXp } = await import('./level-actions');
+    await addUserXp(session.user.email, reward);
+
+    console.log(`🎁 Récompense réclamée! +${reward} étoiles`);
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/challenges');
+  } catch (error) {
+    console.error('❌ Erreur lors de la réclamation:', error);
+    throw error;
+  }
+}
+
+// Débloquer un badge avec des étoiles
+export async function unlockBadge(badgeId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    const userResult = await sql`
+      SELECT id, stars FROM users WHERE email = ${session.user.email}
+    `;
+
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const user = userResult[0];
+
+    const badgeResult = await sql`
+      SELECT id, star_cost, title FROM badges WHERE id = ${badgeId}
+    `;
+
+    if (badgeResult.length === 0) {
+      throw new Error('Badge non trouvé');
+    }
+
+    const badge = badgeResult[0];
+
+    if (user.stars < badge.star_cost) {
+      throw new Error("Pas assez d'étoiles");
+    }
+
+    const alreadyUnlocked = await sql`
+      SELECT id FROM user_badges
+      WHERE user_id = ${user.id} AND badge_id = ${badgeId}
+    `;
+
+    if (alreadyUnlocked.length > 0) {
+      throw new Error('Badge déjà débloqué');
+    }
+
+    await sql`
+      INSERT INTO user_badges (user_id, badge_id)
+      VALUES (${user.id}, ${badgeId})
+    `;
+
+    await sql`
+      UPDATE users
+      SET stars = stars - ${badge.star_cost}
+      WHERE id = ${user.id}
+    `;
+
+    console.log(`🏆 Badge débloqué: ${badge.title} (-${badge.star_cost} étoiles)`);
+    revalidatePath('/dashboard/badges');
+    revalidatePath('/dashboard/challenges');
+  } catch (error) {
+    console.error('❌ Erreur lors du déblocage du badge:', error);
+    throw error;
+  }
+}
