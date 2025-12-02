@@ -130,21 +130,22 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
         <div className="bg-white rounded-3xl p-6 shadow-xl border border-pink-100">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Historique (7 derniers jours)</h3>
           <div className="space-y-3">
-            {history.map((day: any) => {
-              const date = new Date(day.date);
+            {history.map((day: Record<string, unknown>) => {
+              const date = new Date(day.date as string);
               const isToday = date.toDateString() === new Date().toDateString();
+              const dayCompleted = Boolean(day.completed);
               
               return (
                 <div 
-                  key={day.date}
+                  key={day.date as string}
                   className={`flex items-center justify-between p-4 rounded-xl transition-colors ${
-                    day.completed 
+                    dayCompleted 
                       ? 'bg-green-50 border-2 border-green-300' 
                       : 'bg-gray-50 border-2 border-gray-200'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    {day.completed ? (
+                    {dayCompleted ? (
                       <CheckCircleIcon className="w-6 h-6 text-green-500" />
                     ) : (
                       <XMarkIcon className="w-6 h-6 text-gray-400" />
@@ -159,7 +160,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
                       </div>
                     </div>
                   </div>
-                  {day.completed && (
+                  {dayCompleted && (
                     <div className="text-green-600 font-semibold text-sm">✓ Complété</div>
                   )}
                 </div>

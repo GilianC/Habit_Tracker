@@ -6,6 +6,7 @@ import postgres from 'postgres';
 import { auth, signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from 'bcrypt';
+import { addUserXp } from './level-actions';
  
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' }); 
 
@@ -73,7 +74,7 @@ export async function signup(
     
   } catch (error) {
     console.error('Erreur lors de l\'inscription:', error);
-    if ((error as any).code === '23505') { // Duplicate key error
+    if ((error as { code?: string }).code === '23505') { // Duplicate key error
       return 'Un utilisateur avec cet email existe déjà';
     }
     return 'Une erreur est survenue lors de la création du compte';
@@ -192,7 +193,6 @@ export async function logActivity(activityId: string, isDone: boolean) {
   }
 
   const userId = userResult[0].id;
-  const activityCategory = activityResult[0].category;
   
   // Vérifier si un log existe déjà pour aujourd'hui
   const existingLog = await sql`

@@ -43,7 +43,6 @@ export default function ChallengesList({ challenges }: ChallengesListProps) {
 
   const activeChallenges = challenges.filter(c => c.status === 'active');
   const completedChallenges = challenges.filter(c => c.status === 'completed');
-  const failedChallenges = challenges.filter(c => c.status === 'failed');
 
   if (challenges.length === 0) {
     return (

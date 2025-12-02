@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import type { CloudinaryUploadWidgetResults } from 'next-cloudinary';
+import { CldUploadWidget } from 'next-cloudinary';
 
 interface PhotoUploadProps {
   onUploadSuccess: (url: string) => void;
@@ -22,7 +24,7 @@ export default function PhotoUpload({ onUploadSuccess, currentImageUrl, onRemove
     return (
       <div className="space-y-3">
         <label className="block text-sm font-semibold text-gray-700">
-          Photo de l'activité <span className="text-gray-400 font-normal">(Fonctionnalité désactivée)</span>
+          Photo de l&apos;activité <span className="text-gray-400 font-normal">(Fonctionnalité désactivée)</span>
         </label>
         <div className="w-full p-6 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl text-center">
           <PhotoIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -35,18 +37,15 @@ export default function PhotoUpload({ onUploadSuccess, currentImageUrl, onRemove
     );
   }
 
-  // Import dynamique de CldUploadWidget seulement si Cloudinary est configuré
-  const CldUploadWidget = require('next-cloudinary').CldUploadWidget;
-
-  const handleSuccess = (result: any) => {
+  const handleSuccess = (result: CloudinaryUploadWidgetResults) => {
     setIsUploading(false);
-    if (result?.info?.secure_url) {
+    if (typeof result.info === 'object' && result.info?.secure_url) {
       onUploadSuccess(result.info.secure_url);
       setError('');
     }
   };
 
-  const handleError = (error: any) => {
+  const handleError = (error: unknown) => {
     setIsUploading(false);
     setError('Erreur lors de l\'upload. Réessayez.');
     console.error('Upload error:', error);
@@ -61,7 +60,7 @@ export default function PhotoUpload({ onUploadSuccess, currentImageUrl, onRemove
   return (
     <div className="space-y-3">
       <label className="block text-sm font-semibold text-gray-700">
-        Photo de l'activité <span className="text-gray-400 font-normal">(Niveau 5 requis)</span>
+        Photo de l&apos;activité <span className="text-gray-400 font-normal">(Niveau 5 requis)</span>
       </label>
 
       {currentImageUrl ? (
@@ -102,7 +101,7 @@ export default function PhotoUpload({ onUploadSuccess, currentImageUrl, onRemove
             multiple: false,
           }}
         >
-          {({ open }) => (
+          {({ open }: { open: () => void }) => (
             <button
               type="button"
               onClick={() => {

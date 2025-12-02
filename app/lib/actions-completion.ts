@@ -1,10 +1,7 @@
 'use server';
 
-import { auth, signIn, signOut } from '@/auth';
-import { AuthError } from 'next-auth';
+import { auth } from '@/auth';
 import postgres from 'postgres';
-import { redirect } from 'next/navigation';
-import bcrypt from 'bcrypt';
 import { revalidatePath } from 'next/cache';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });

@@ -38,7 +38,7 @@ export default function ActivityChart({ data, period = 'week' }: ActivityChartPr
   const maxValue = Math.max(...chartData.map(d => d.count), 1);
 
   // Custom Tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { day?: string; date?: string; count: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

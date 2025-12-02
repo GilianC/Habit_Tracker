@@ -3,7 +3,7 @@ import { Cog6ToothIcon, ArrowRightOnRectangleIcon, FireIcon, ChartBarIcon, Troph
 import { auth, signOut } from '@/auth';
 import { redirect } from 'next/navigation';
 import { fetchUserLevelInfo } from '@/app/lib/data';
-import { calculateLevel, getXpForNextLevel, getLevelProgress, getLevelBadge } from '@/app/lib/level-system';
+import { getXpForNextLevel, getLevelProgress, getLevelBadge } from '@/app/lib/level-system';
 import LevelProgressBar from '@/app/ui/common/level-progress-bar';
 import postgres from 'postgres';
 
@@ -53,10 +53,10 @@ export default async function ProfilePage() {
     LIMIT 6
   `;
 
-  const badges = badgesResult.map((b: any) => ({
-    id: b.id,
-    name: b.title,
-    icon: b.icon,
+  const badges = badgesResult.map((b: Record<string, unknown>) => ({
+    id: b.id as number,
+    name: b.title as string,
+    icon: b.icon as string,
     earned: b.user_badge_id !== null,
     color: b.user_badge_id !== null ? 'from-pink-400 to-rose-500' : 'from-gray-300 to-gray-400'
   }));

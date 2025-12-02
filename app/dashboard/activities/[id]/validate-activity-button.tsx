@@ -13,7 +13,6 @@ interface ValidateActivityButtonProps {
 
 export default function ValidateActivityButton({ 
   activityId, 
-  activityName,
   initialCompleted 
 }: ValidateActivityButtonProps) {
   const [completed, setCompleted] = useState(initialCompleted);

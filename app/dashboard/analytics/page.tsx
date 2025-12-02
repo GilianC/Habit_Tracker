@@ -105,7 +105,7 @@ export default async function AnalyticsPage() {
           />
           <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
             <p className="text-xs text-purple-800">
-              💡 <span className="font-semibold">Astuce :</span> Complétez des défis et validez vos activités pour gagner de l'XP et monter de niveau !
+              💡 <span className="font-semibold">Astuce :</span> Complétez des défis et validez vos activités pour gagner de l&apos;XP et monter de niveau !
             </p>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default async function AnalyticsPage() {
         <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 shadow-lg border border-white/20">
           <div className="mb-4">
             <h2 className="text-xl font-bold text-gray-900 mb-1">✅ Activités Complétées</h2>
-            <p className="text-sm text-gray-600">Nombre d'activités complétées par jour cette semaine</p>
+            <p className="text-sm text-gray-600">Nombre d&apos;activités complétées par jour cette semaine</p>
           </div>
           <ActivityChart data={activityData} period="week" />
           <div className="mt-4 p-3 bg-pink-50 rounded-lg border border-pink-200">
@@ -134,7 +134,7 @@ export default async function AnalyticsPage() {
               <h3 className="font-bold text-amber-800 mb-1">🎉 Fonctionnalité Niveau 3 débloquée !</h3>
               <p className="text-sm text-amber-700">
                 Les graphiques avancés vous permettent de suivre votre progression en détail. 
-                Plus de statistiques et d'insights seront ajoutés régulièrement !
+                Plus de statistiques et d&apos;insights seront ajoutés régulièrement !
               </p>
             </div>
           </div>

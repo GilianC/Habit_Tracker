@@ -26,7 +26,7 @@ export default async function GalleryPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold">🖼️ Galerie</h1>
-                <p className="text-white/90">Toutes vos photos d'activités</p>
+                <p className="text-white/90">Toutes vos photos d&apos;activités</p>
               </div>
             </div>
             <Link
@@ -48,7 +48,7 @@ export default async function GalleryPage() {
             <div>
               <h3 className="font-bold text-purple-800 mb-1">🎉 Fonctionnalité Niveau 5 débloquée !</h3>
               <p className="text-sm text-purple-700">
-                La galerie d'images vous permet de voir toutes vos photos d'activités en un coup d'œil. 
+                La galerie d&apos;images vous permet de voir toutes vos photos d&apos;activités en un coup d&apos;œil. 
                 Cliquez sur une image pour la voir en plein écran !
               </p>
             </div>

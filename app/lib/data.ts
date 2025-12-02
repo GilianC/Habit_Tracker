@@ -424,7 +424,7 @@ export async function fetchUserActivitiesForCalendar(userEmail: string) {
       icon: row.icon as string,
       frequency: row.frequency as string,
       start_date: row.start_date as string,
-      logs: (row.logs as any[]) || []
+      logs: (row.logs as Array<{ date: string; is_done: boolean }>) || []
     }));
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des activités pour le calendrier:', error);
@@ -801,8 +801,8 @@ export async function fetchActivityCompletionData(userEmail: string, days: numbe
     }
     
     // Remplir avec les vraies données
-    result.forEach((row: any) => {
-      const dateStr = new Date(row.date).toISOString().split('T')[0];
+    result.forEach((row: Record<string, unknown>) => {
+      const dateStr = new Date(row.date as Date).toISOString().split('T')[0];
       if (dataMap.has(dateStr)) {
         dataMap.get(dateStr)!.count = Number(row.count);
       }
@@ -844,14 +844,14 @@ export async function fetchActivitiesWithImages(userEmail: string) {
       ORDER BY created_at DESC
     `;
     
-    return result.map((activity: any) => ({
+    return result.map((activity: Record<string, unknown>) => ({
       id: String(activity.id),
-      name: activity.name,
-      imageUrl: activity.image_url,
-      icon: activity.icon,
-      color: activity.color,
-      category: activity.category,
-      createdAt: activity.created_at,
+      name: activity.name as string,
+      imageUrl: activity.image_url as string,
+      icon: activity.icon as string,
+      color: activity.color as string,
+      category: activity.category as string,
+      createdAt: activity.created_at as Date,
     }));
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des activités avec images:', error);
@@ -893,16 +893,16 @@ export async function fetchCustomChallenges(userEmail: string) {
       ORDER BY is_completed ASC, created_at DESC
     `;
     
-    return result.map((challenge: any) => ({
+    return result.map((challenge: Record<string, unknown>) => ({
       id: Number(challenge.id),
-      title: challenge.title,
-      description: challenge.description || '',
+      title: challenge.title as string,
+      description: (challenge.description as string) || '',
       targetValue: Number(challenge.target_value),
       currentValue: Number(challenge.current_value),
-      unit: challenge.unit,
+      unit: challenge.unit as string,
       starReward: Number(challenge.star_reward),
-      icon: challenge.icon,
-      color: challenge.color,
+      icon: challenge.icon as string,
+      color: challenge.color as string,
       difficulty: challenge.difficulty,
       isCompleted: challenge.is_completed,
       completedAt: challenge.completed_at,

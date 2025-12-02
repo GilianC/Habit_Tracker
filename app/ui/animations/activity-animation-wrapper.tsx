@@ -4,12 +4,6 @@ import { useState } from 'react';
 import { ChallengeValidation } from './challenge-animations';
 import { StarCollection } from './star-animations';
 
-interface ActivityCompletionAnimationProps {
-  activityName: string;
-  points: number;
-  onComplete?: () => void;
-}
-
 export function useActivityAnimation() {
   const [animationData, setAnimationData] = useState<{
     activityName: string;

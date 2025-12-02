@@ -16,7 +16,6 @@ interface LevelProgressBarProps {
 export default function LevelProgressBar({
   level,
   currentXp,
-  nextLevelXp,
   progress,
   xpNeeded,
   badgeIcon,

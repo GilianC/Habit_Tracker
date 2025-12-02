@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { XMarkIcon, LockClosedIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { getUnlockedRewards, getNextReward, type LevelReward } from '@/app/lib/level-rewards';
 

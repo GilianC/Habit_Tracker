@@ -3,7 +3,6 @@ import { PlusIcon, CheckCircleIcon, ClockIcon, HomeIcon, ChartBarIcon, TrophyIco
 import { auth } from '@/auth';
 import { fetchUserActivitiesWithTodayStatus } from '@/app/lib/data';
 import { redirect } from 'next/navigation';
-import ActivityToggle from './activity-toggle';
 
 export default async function ActivitiesPage() {
   // Récupérer la session
@@ -16,7 +15,7 @@ export default async function ActivitiesPage() {
   // Récupérer les activités de l'utilisateur
   const activities = await fetchUserActivitiesWithTodayStatus(session.user.email);
 
-  const completedCount = activities.filter((a: any) => a.completed_today).length;
+  const completedCount = activities.filter((a) => a.completed_today).length;
   const totalCount = activities.length;
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -56,7 +55,7 @@ export default async function ActivitiesPage() {
 
         {/* Liste des activités */}
         <div className="space-y-4">
-          {activities.map((activity: any) => (
+          {activities.map((activity) => (
             <Link
               key={activity.id}
               href={`/dashboard/activities/${activity.id}`}

@@ -1,5 +1,5 @@
 import { lusitana } from '@/app/ui/fonts';
-import { SparklesIcon, CalendarIcon, StarIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 interface WelcomeHeaderProps {

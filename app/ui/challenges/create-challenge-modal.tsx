@@ -61,7 +61,8 @@ export default function CreateChallengeModal({ activities, onClose }: CreateChal
       // } else {
       //   onClose();
       // }
-    } catch (err) {
+    } catch (error) {
+      console.error('Erreur création défi:', error);
       setError('Une erreur est survenue');
       setIsSubmitting(false);
     }

@@ -45,7 +45,7 @@ export default function ThemeSelector({ currentTheme, userLevel }: ThemeSelector
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Thème de l'application</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Thème de l&apos;application</h3>
         {isUpdating && (
           <div className="flex items-center gap-2 text-pink-600">
             <div className="w-4 h-4 border-2 border-pink-600 border-t-transparent rounded-full animate-spin" />

@@ -98,7 +98,7 @@ export default async function HomePage() {
 
           {/* Activités rapides */}
           <div className="grid grid-cols-3 gap-3">
-            {quickActivities.map((activity: any) => (
+            {quickActivities.map((activity) => (
               <QuickActivityButton
                 key={activity.id}
                 activityId={activity.id.toString()}

@@ -1,6 +1,6 @@
 'use client';
 
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { calculateLevel, getXpForNextLevel } from '@/app/lib/level-system';
 
 interface XpProgressData {
@@ -33,7 +33,7 @@ export default function ProgressChart({ data = [], currentXp, currentLevel }: Pr
   }));
 
   // Custom Tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { date: string; xp: number; level: number; xpForNextLevel: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

@@ -19,7 +19,7 @@ export default async function SettingsPage() {
   // Récupérer les infos utilisateur
   const userInfo = await fetchUserLevelInfo(session.user.email);
   const themeResult = await sql`SELECT theme FROM users WHERE email = ${session.user.email}`;
-  const currentTheme = (themeResult[0]?.theme as any) || 'light';
+  const currentTheme = ((themeResult[0]?.theme as string) || 'light') as 'light' | 'dark' | 'sunset' | 'ocean' | 'forest';
 
   return (
     <main className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">

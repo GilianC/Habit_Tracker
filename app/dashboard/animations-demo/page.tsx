@@ -48,14 +48,14 @@ export default function AnimationDemo() {
             🎬 Démo des Animations
           </h1>
           <p className="text-xl text-gray-600">
-            Testez toutes les animations de l'application
+            Testez toutes les animations de l&apos;application
           </p>
         </div>
 
         {/* Section XP et Niveau */}
         <section className="bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            📊 Système d'XP et de Niveau
+            📊 Système d&apos;XP et de Niveau
           </h2>
           
           <div className="space-y-6">
@@ -67,7 +67,7 @@ export default function AnimationDemo() {
               currentXp={xp}
               xpForNextLevel={1000}
               level={level}
-              onLevelUp={(newLevel) => {
+              onLevelUp={() => {
                 handleShowNotification('levelup');
               }}
             />
@@ -85,7 +85,7 @@ export default function AnimationDemo() {
         {/* Section Étoiles */}
         <section className="bg-white rounded-2xl shadow-xl p-8 animate-slide-up delay-100">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            ⭐ Système d'Étoiles
+            ⭐ Système d&apos;Étoiles
           </h2>
           
           <div className="space-y-6">
