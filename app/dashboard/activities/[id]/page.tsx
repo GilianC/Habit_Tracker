@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { ArrowLeftIcon, CheckCircleIcon, XMarkIcon, HomeIcon, ChartBarIcon, TrophyIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { fetchActivityDetails, fetchActivityHistory } from '@/app/lib/data';
 import ValidateActivityButton from './validate-activity-button';
+import DeleteActivityButton from './delete-activity-button';
+import postgres from 'postgres';
+
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export default async function ActivityDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -20,6 +24,10 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
   if (!activity) {
     notFound();
   }
+
+  // Récupérer l'ID utilisateur pour le bouton de suppression
+  const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email}`;
+  const userId = String(userResult[0].id);
 
   const history = await fetchActivityHistory(id, session.user.email);
 
@@ -107,6 +115,15 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
             activityName={activity.name}
             initialCompleted={activity.completed_today}
           />
+
+          {/* Bouton de suppression */}
+          <div className="mt-4">
+            <DeleteActivityButton
+              activityId={id}
+              userId={userId}
+              activityName={activity.name}
+            />
+          </div>
         </div>
 
         {/* Historique des 7 derniers jours */}

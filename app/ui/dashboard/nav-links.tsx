@@ -7,6 +7,7 @@ import {
   Cog6ToothIcon,
   SparklesIcon,
   CalendarIcon,
+  PhotoIcon,
 } from '@heroicons/react/24/outline';
 import {
   HomeIcon as HomeIconSolid,
@@ -16,6 +17,7 @@ import {
   Cog6ToothIcon as Cog6ToothIconSolid,
   SparklesIcon as SparklesIconSolid,
   CalendarIcon as CalendarIconSolid,
+  PhotoIcon as PhotoIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -49,11 +51,19 @@ const links = [
   },
   { 
     name: 'Analytics', 
-    href: '/dashboard/profile', 
+    href: '/dashboard/analytics', 
     icon: ChartBarIcon,
     iconSolid: ChartBarIconSolid,
     color: 'fuchsia',
-    description: 'Progrès et stats'
+    description: 'Graphiques et stats'
+  },
+  { 
+    name: 'Galerie', 
+    href: '/dashboard/gallery', 
+    icon: PhotoIcon,
+    iconSolid: PhotoIconSolid,
+    color: 'purple',
+    description: 'Photos d\'activités'
   },
   { 
     name: 'Communauté', 
@@ -85,6 +95,7 @@ const colorClasses = {
   pink: 'from-pink-500 to-rose-500',
   rose: 'from-rose-500 to-pink-600', 
   fuchsia: 'from-fuchsia-500 to-pink-500',
+  purple: 'from-purple-500 to-fuchsia-500',
   gray: 'from-gray-400 to-gray-500'
 };
 

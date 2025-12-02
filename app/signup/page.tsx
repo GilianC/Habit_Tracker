@@ -1,5 +1,5 @@
-import HabitLogo from '@/app/ui/habit-logo';
-import SignupForm from '@/app/ui/signup-form';
+import HabitLogo from '@/app/ui/icons/habit-logo';
+import SignupForm from '@/app/ui/forms/signup-form';
 import { Suspense } from 'react';
 import Link from 'next/link';
  

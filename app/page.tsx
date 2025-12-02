@@ -1,4 +1,4 @@
-import HabitLogo from '@/app/ui/habit-logo';
+import HabitLogo from '@/app/ui/icons/habit-logo';
 import { ArrowRightIcon, CheckCircleIcon, ChartBarIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import Link from 'next/link';

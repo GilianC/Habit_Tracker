@@ -5,16 +5,19 @@ import { useState } from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { createActivity } from '@/app/lib/actions';
 import { useActionState } from 'react';
-import { Button } from '@/app/ui/button';
+import { Button } from '@/app/ui/common/button';
+import PhotoUpload from '@/app/ui/activities/photo-upload';
 
 export default function CreateActivityForm() {
   const [formData, setFormData] = useState({
     name: '',
     frequency: 'daily',
+    weeklyDay: '1', // Lundi par défaut
     color: '#10B981',
     icon: '✅',
     startDate: new Date().toISOString().split('T')[0],
-    category: 'other'
+    category: 'other',
+    imageUrl: ''
   });
 
   const [errorMessage, formAction, isPending] = useActionState(
@@ -121,6 +124,35 @@ export default function CreateActivityForm() {
           </select>
         </div>
 
+        {/* Jour de la semaine (seulement si hebdomadaire) */}
+        {formData.frequency === 'weekly' && (
+          <div className="mb-4">
+            <label htmlFor="weeklyDay" className="block text-sm font-medium text-gray-700 mb-2">
+              Jour de la semaine
+            </label>
+            <select
+              id="weeklyDay"
+              name="weeklyDay"
+              value={formData.weeklyDay}
+              onChange={(e) => setFormData({...formData, weeklyDay: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            >
+              <option value="1">Lundi</option>
+              <option value="2">Mardi</option>
+              <option value="3">Mercredi</option>
+              <option value="4">Jeudi</option>
+              <option value="5">Vendredi</option>
+              <option value="6">Samedi</option>
+              <option value="0">Dimanche</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Cette activité sera à faire chaque {
+                ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'][parseInt(formData.weeklyDay)]
+              }
+            </p>
+          </div>
+        )}
+
         {/* Catégorie */}
         <div className="mb-4">
           <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
@@ -144,21 +176,23 @@ export default function CreateActivityForm() {
           </p>
         </div>
 
-        {/* Date de début */}
-        <div className="mb-4">
-          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
-            Date de début
-          </label>
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            value={formData.startDate}
-            onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            required
-          />
-        </div>
+        {/* Date de début (seulement si quotidien) */}
+        {formData.frequency === 'daily' && (
+          <div className="mb-4">
+            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+              Date de début
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              name="startDate"
+              value={formData.startDate}
+              onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              required
+            />
+          </div>
+        )}
 
         {/* Couleur */}
         <div className="mb-4">
@@ -205,6 +239,15 @@ export default function CreateActivityForm() {
           </div>
         </div>
 
+        {/* Photo de l'activité (Niveau 5) */}
+        <div className="mb-4">
+          <PhotoUpload
+            onUploadSuccess={(url) => setFormData({...formData, imageUrl: url})}
+            currentImageUrl={formData.imageUrl}
+            onRemove={() => setFormData({...formData, imageUrl: ''})}
+          />
+        </div>
+
         {/* Aperçu */}
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600 mb-2">Aperçu :</p>
@@ -229,6 +272,7 @@ export default function CreateActivityForm() {
         {/* Champs cachés pour envoyer les valeurs */}
         <input type="hidden" name="color" value={formData.color} />
         <input type="hidden" name="icon" value={formData.icon} />
+        <input type="hidden" name="imageUrl" value={formData.imageUrl} />
 
         {/* Message d'erreur */}
         {errorMessage && (

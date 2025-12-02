@@ -111,6 +111,7 @@ export async function createActivity(
     const icon = formData.get('icon') as string || '✅';
     const startDate = formData.get('startDate') as string || new Date().toISOString().split('T')[0];
     const category = formData.get('category') as string || 'other';
+    const imageUrl = formData.get('imageUrl') as string || null;
 
     // Validation
     if (!name || name.trim().length === 0) {
@@ -123,8 +124,8 @@ export async function createActivity(
 
     // Créer l'activité
     await sql`
-      INSERT INTO activities (user_id, name, frequency, color, icon, start_date, category, created_at)
-      VALUES (${userId}, ${name}, ${frequency}, ${color}, ${icon}, ${startDate}, ${category}, ${new Date().toISOString()})
+      INSERT INTO activities (user_id, name, frequency, color, icon, start_date, category, image_url, created_at)
+      VALUES (${userId}, ${name}, ${frequency}, ${color}, ${icon}, ${startDate}, ${category}, ${imageUrl}, ${new Date().toISOString()})
     `;
 
     console.log('✅ Activité créée avec succès:', name);
@@ -157,13 +158,20 @@ export async function updateActivity(id: string, formData: FormData) {
 }
 
 export async function deleteActivity(id: string, userId: string) {
-  // Supprimer les logs associés
-  await sql`DELETE FROM activity_logs WHERE activity_id = ${id}`;
-  
-  // Supprimer l'activité
-  await sql`DELETE FROM activities WHERE id = ${id} AND user_id = ${userId}`;
-  
-  revalidatePath('/dashboard/activities');
+  try {
+    // Supprimer les logs associés (bien que CASCADE devrait le faire automatiquement)
+    await sql`DELETE FROM activity_logs WHERE activity_id = ${id}`;
+    
+    // Supprimer l'activité
+    await sql`DELETE FROM activities WHERE id = ${id} AND user_id = ${userId}`;
+    
+    console.log(`🗑️ Activité ${id} supprimée avec succès`);
+    revalidatePath('/dashboard/activities');
+    revalidatePath('/dashboard');
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression:', error);
+    throw error;
+  }
 }
 
 export async function logActivity(activityId: string, isDone: boolean) {
@@ -554,3 +562,173 @@ export async function unlockBadge(badgeId: string) {
     throw error;
   }
 }
+
+// Changer le thème de l'utilisateur
+export async function updateUserTheme(theme: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    await sql`
+      UPDATE users
+      SET theme = ${theme}
+      WHERE email = ${session.user.email}
+    `;
+
+    console.log(`🎨 Thème changé: ${theme}`);
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/settings');
+    revalidatePath('/dashboard/profile');
+    
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Erreur lors du changement de thème:', error);
+    throw error;
+  }
+}
+
+// ==================== CUSTOM CHALLENGES (Niveau 5+) ====================
+
+export async function createCustomChallenge(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      return 'Vous devez être connecté';
+    }
+
+    const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email}`;
+    if (userResult.length === 0) {
+      return 'Utilisateur non trouvé';
+    }
+
+    const userId = userResult[0].id;
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string || '';
+    const targetValue = parseInt(formData.get('targetValue') as string) || 1;
+    const unit = formData.get('unit') as string || 'fois';
+    const starReward = parseInt(formData.get('starReward') as string) || 10;
+    const icon = formData.get('icon') as string || '🎯';
+    const color = formData.get('color') as string || '#EC4899';
+    const difficulty = formData.get('difficulty') as string || 'medium';
+    const durationDays = parseInt(formData.get('durationDays') as string) || 7;
+
+    if (!title || title.trim().length === 0) {
+      return 'Le titre est requis';
+    }
+
+    if (targetValue < 1) {
+      return 'La valeur cible doit être supérieure à 0';
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + durationDays);
+
+    await sql`
+      INSERT INTO custom_challenges (
+        user_id, title, description, target_value, unit, star_reward,
+        icon, color, difficulty, expires_at, created_at
+      )
+      VALUES (
+        ${userId}, ${title}, ${description}, ${targetValue}, ${unit}, ${starReward},
+        ${icon}, ${color}, ${difficulty}, ${expiresAt.toISOString()}, ${new Date().toISOString()}
+      )
+    `;
+
+    console.log('✅ Défi personnalisé créé:', title);
+    revalidatePath('/dashboard/challenges');
+    
+    return undefined; // Succès
+  } catch (error) {
+    console.error('❌ Erreur création défi personnalisé:', error);
+    return 'Une erreur est survenue';
+  }
+}
+
+export async function updateCustomChallengeProgress(
+  challengeId: number,
+  incrementValue: number = 1
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non authentifié');
+    }
+
+    const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email}`;
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const userId = userResult[0].id;
+
+    // Récupérer le défi
+    const challenge = await sql`
+      SELECT * FROM custom_challenges
+      WHERE id = ${challengeId} AND user_id = ${userId}
+    `;
+
+    if (challenge.length === 0) {
+      throw new Error('Défi non trouvé');
+    }
+
+    const currentChallenge = challenge[0];
+    const newValue = currentChallenge.current_value + incrementValue;
+    const isCompleted = newValue >= currentChallenge.target_value;
+
+    // Mettre à jour le défi
+    await sql`
+      UPDATE custom_challenges
+      SET 
+        current_value = ${newValue},
+        is_completed = ${isCompleted},
+        completed_at = ${isCompleted ? new Date().toISOString() : null}
+      WHERE id = ${challengeId}
+    `;
+
+    // Si complété, donner des XP
+    if (isCompleted && !currentChallenge.is_completed) {
+      await addUserXp(session.user.email, currentChallenge.star_reward);
+      console.log(`🎉 Défi personnalisé complété: ${currentChallenge.title}`);
+    }
+
+    revalidatePath('/dashboard/challenges');
+    return { success: true, isCompleted };
+  } catch (error) {
+    console.error('❌ Erreur mise à jour défi:', error);
+    throw error;
+  }
+}
+
+export async function deleteCustomChallenge(challengeId: number) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non authentifié');
+    }
+
+    const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email}`;
+    if (userResult.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    const userId = userResult[0].id;
+
+    await sql`
+      DELETE FROM custom_challenges
+      WHERE id = ${challengeId} AND user_id = ${userId}
+    `;
+
+    console.log('🗑️ Défi personnalisé supprimé');
+    revalidatePath('/dashboard/challenges');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Erreur suppression défi:', error);
+    throw error;
+  }
+}
+

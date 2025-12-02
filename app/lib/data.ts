@@ -724,3 +724,194 @@ export async function fetchUserLevelInfo(userEmail: string) {
     throw new Error('Impossible de récupérer les informations de level');
   }
 }
+
+// Récupérer les données de progression XP/niveau pour les graphiques
+export async function fetchXpProgressData(userEmail: string, days: number = 30) {
+  try {
+    // Pour l'instant, on retourne juste le point actuel
+    // Plus tard, on pourra ajouter une table xp_history pour tracker l'historique
+    const userInfo = await fetchUserLevelInfo(userEmail);
+    
+    // Simuler quelques points pour démonstration
+    // TODO: Créer une table xp_history pour stocker l'historique réel
+    const today = new Date();
+    const data = [];
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      
+      // Simuler une progression (à remplacer par vraies données)
+      const progress = (days - i) / days;
+      data.push({
+        date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+        xp: Math.floor(userInfo.xp * progress),
+        level: Math.max(1, Math.floor(userInfo.level * progress)),
+      });
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des données XP:', error);
+    return [];
+  }
+}
+
+// Récupérer le nombre d'activités complétées par jour
+export async function fetchActivityCompletionData(userEmail: string, days: number = 7) {
+  try {
+    const user = await sql`
+      SELECT id FROM users WHERE email = ${userEmail}
+    `;
+    
+    if (user.length === 0) {
+      return [];
+    }
+    
+    const userId = user[0].id;
+    
+    // Récupérer les logs des X derniers jours
+    const result = await sql`
+      SELECT 
+        DATE(completed_at) as date,
+        COUNT(*) as count
+      FROM activity_logs
+      WHERE user_id = ${userId}
+        AND completed_at >= CURRENT_DATE - INTERVAL '${days} days'
+      GROUP BY DATE(completed_at)
+      ORDER BY date ASC
+    `;
+    
+    // Créer un tableau de tous les jours avec 0 par défaut
+    const today = new Date();
+    const dataMap = new Map();
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'short' });
+      const fullDayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+      
+      dataMap.set(dateStr, {
+        date: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+        day: fullDayName.charAt(0).toUpperCase() + fullDayName.slice(1),
+        count: 0,
+      });
+    }
+    
+    // Remplir avec les vraies données
+    result.forEach((row: any) => {
+      const dateStr = new Date(row.date).toISOString().split('T')[0];
+      if (dataMap.has(dateStr)) {
+        dataMap.get(dateStr)!.count = Number(row.count);
+      }
+    });
+    
+    return Array.from(dataMap.values());
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des données d\'activités:', error);
+    return [];
+  }
+}
+
+// Récupérer toutes les activités avec des images pour la galerie
+export async function fetchActivitiesWithImages(userEmail: string) {
+  try {
+    const user = await sql`
+      SELECT id FROM users WHERE email = ${userEmail}
+    `;
+    
+    if (user.length === 0) {
+      return [];
+    }
+    
+    const userId = user[0].id;
+    
+    const result = await sql`
+      SELECT 
+        id,
+        name,
+        image_url,
+        icon,
+        color,
+        category,
+        created_at
+      FROM activities
+      WHERE user_id = ${userId}
+        AND image_url IS NOT NULL
+        AND image_url != ''
+      ORDER BY created_at DESC
+    `;
+    
+    return result.map((activity: any) => ({
+      id: String(activity.id),
+      name: activity.name,
+      imageUrl: activity.image_url,
+      icon: activity.icon,
+      color: activity.color,
+      category: activity.category,
+      createdAt: activity.created_at,
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des activités avec images:', error);
+    return [];
+  }
+}
+
+// Récupérer les défis personnalisés de l'utilisateur
+export async function fetchCustomChallenges(userEmail: string) {
+  try {
+    const user = await sql`
+      SELECT id FROM users WHERE email = ${userEmail}
+    `;
+    
+    if (user.length === 0) {
+      return [];
+    }
+    
+    const userId = user[0].id;
+    
+    const result = await sql`
+      SELECT 
+        id,
+        title,
+        description,
+        target_value,
+        current_value,
+        unit,
+        star_reward,
+        icon,
+        color,
+        difficulty,
+        is_completed,
+        completed_at,
+        expires_at,
+        created_at
+      FROM custom_challenges
+      WHERE user_id = ${userId}
+      ORDER BY is_completed ASC, created_at DESC
+    `;
+    
+    return result.map((challenge: any) => ({
+      id: Number(challenge.id),
+      title: challenge.title,
+      description: challenge.description || '',
+      targetValue: Number(challenge.target_value),
+      currentValue: Number(challenge.current_value),
+      unit: challenge.unit,
+      starReward: Number(challenge.star_reward),
+      icon: challenge.icon,
+      color: challenge.color,
+      difficulty: challenge.difficulty,
+      isCompleted: challenge.is_completed,
+      completedAt: challenge.completed_at,
+      expiresAt: challenge.expires_at,
+      createdAt: challenge.created_at,
+      progressPercent: Math.round((Number(challenge.current_value) / Number(challenge.target_value)) * 100),
+    }));
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des défis personnalisés:', error);
+    return [];
+  }
+}

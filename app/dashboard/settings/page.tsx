@@ -1,10 +1,38 @@
 import { lusitana } from '@/app/ui/fonts';
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import { fetchUserLevelInfo } from '@/app/lib/data';
+import ThemeSelector from '@/app/ui/settings/theme-selector';
+import postgres from 'postgres';
+import Link from 'next/link';
 
-export default function SettingsPage() {
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+export default async function SettingsPage() {
+  const session = await auth();
+  
+  if (!session?.user?.email) {
+    redirect('/login');
+  }
+
+  // Récupérer les infos utilisateur
+  const userInfo = await fetchUserLevelInfo(session.user.email);
+  const themeResult = await sql`SELECT theme FROM users WHERE email = ${session.user.email}`;
+  const currentTheme = (themeResult[0]?.theme as any) || 'light';
+
   return (
     <main className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-4xl mx-auto">
+        {/* Bouton retour */}
+        <Link 
+          href="/dashboard"
+          className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl text-gray-700 font-medium transition-colors shadow-sm"
+        >
+          <ArrowLeftIcon className="w-4 h-4" />
+          Retour au tableau de bord
+        </Link>
+
         <div className="mb-8">
           <h1 className={`${lusitana.className} text-3xl font-bold text-gray-900 mb-2`}>
             Paramètres
@@ -122,35 +150,7 @@ export default function SettingsPage() {
               </h2>
             </div>
             
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Thème de couleur
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="p-3 border-2 border-emerald-500 rounded-xl bg-linear-to-br from-emerald-400 to-teal-500 cursor-pointer">
-                    <div className="w-full h-8 rounded-lg bg-white/20"></div>
-                  </div>
-                  <div className="p-3 border-2 border-gray-300 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 cursor-pointer opacity-60">
-                    <div className="w-full h-8 rounded-lg bg-white/20"></div>
-                  </div>
-                  <div className="p-3 border-2 border-gray-300 rounded-xl bg-linear-to-br from-purple-400 to-pink-500 cursor-pointer opacity-60">
-                    <div className="w-full h-8 rounded-lg bg-white/20"></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Mode d&apos;affichage
-                </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-xl" disabled>
-                  <option>Mode clair</option>
-                  <option>Mode sombre</option>
-                  <option>Automatique</option>
-                </select>
-              </div>
-            </div>
+            <ThemeSelector currentTheme={currentTheme} userLevel={userInfo.level} />
           </div>
 
           {/* Paramètres de confidentialité */}

@@ -2,6 +2,12 @@ import Link from 'next/link';
 import { Cog6ToothIcon, ArrowRightOnRectangleIcon, FireIcon, ChartBarIcon, TrophyIcon, CalendarIcon, HomeIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { auth, signOut } from '@/auth';
 import { redirect } from 'next/navigation';
+import { fetchUserLevelInfo } from '@/app/lib/data';
+import { calculateLevel, getXpForNextLevel, getLevelProgress, getLevelBadge } from '@/app/lib/level-system';
+import LevelProgressBar from '@/app/ui/common/level-progress-bar';
+import postgres from 'postgres';
+
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export default async function ProfilePage() {
   // Récupérer la session
@@ -11,29 +17,60 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  // Données du profil (à connecter plus tard à la base de données)
+  // Récupérer les vraies données de l'utilisateur
+  const userLevelInfo = await fetchUserLevelInfo(session.user.email);
+  
+  // Calculer les infos de progression
+  const currentLevel = userLevelInfo.level;
+  const currentXp = userLevelInfo.xp;
+  const xpForNextLevel = getXpForNextLevel(currentLevel);
+  const levelProgress = getLevelProgress(currentXp, currentLevel);
+  const xpNeeded = xpForNextLevel - (currentXp - getXpForNextLevel(currentLevel - 1));
+  const levelBadge = getLevelBadge(currentLevel);
+
+  // Récupérer les stats de l'utilisateur
+  const statsResult = await sql`
+    SELECT 
+      (SELECT COUNT(*) FROM activities WHERE user_id = (SELECT id FROM users WHERE email = ${session.user.email})) as total_activities
+  `;
+
+  const stats = {
+    totalActivities: Number(statsResult[0]?.total_activities) || 0,
+    totalPoints: userLevelInfo.xp,
+    bestStreak: 0, // TODO: Calculer le meilleur streak
+    streak: 0 // TODO: Calculer le streak actuel
+  };
+
+  // Récupérer les badges de l'utilisateur
+  const badgesResult = await sql`
+    SELECT b.id, b.title, b.icon, b.condition_type, b.condition_value,
+           ub.id as user_badge_id
+    FROM badges b
+    LEFT JOIN user_badges ub ON ub.badge_id = b.id 
+      AND ub.user_id = (SELECT id FROM users WHERE email = ${session.user.email})
+    WHERE b.condition_type = 'level'
+    ORDER BY b.condition_value ASC
+    LIMIT 6
+  `;
+
+  const badges = badgesResult.map((b: any) => ({
+    id: b.id,
+    name: b.title,
+    icon: b.icon,
+    earned: b.user_badge_id !== null,
+    color: b.user_badge_id !== null ? 'from-pink-400 to-rose-500' : 'from-gray-300 to-gray-400'
+  }));
+
   const user = {
     name: session.user.name || 'Utilisateur',
     email: session.user.email,
-    joinDate: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
-    level: 3,
-    currentPoints: 280,
-    nextLevelPoints: 300,
-    stats: {
-      streak: 7,
-      totalActivities: 12,
-      totalPoints: 280,
-      bestStreak: 15
-    },
-    badges: [
-      { id: 1, name: 'Premier pas', icon: '🌟', earned: true, color: 'from-yellow-400 to-orange-500' },
-      { id: 2, name: 'Régularité', icon: '🔥', earned: true, color: 'from-orange-400 to-red-500' },
-      { id: 3, name: 'Champion', icon: '🏆', earned: false, color: 'from-blue-400 to-purple-500' },
-      { id: 4, name: 'Marathonien', icon: '🎯', earned: false, color: 'from-green-400 to-teal-500' }
-    ]
+    joinDate: new Date(userLevelInfo.id).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+    level: currentLevel,
+    currentPoints: currentXp,
+    nextLevelPoints: xpForNextLevel,
+    stats,
+    badges
   };
-
-  const levelProgress = (user.currentPoints / user.nextLevelPoints) * 100;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 via-rose-50 to-pink-100 pb-24">
@@ -53,21 +90,15 @@ export default async function ProfilePage() {
           </div>
 
           {/* Niveau et progression */}
-          <div className="bg-linear-to-r from-pink-50 to-rose-50 rounded-2xl p-4 mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-gray-700">Niveau {user.level}</span>
-              <span className="text-xs text-gray-600">{user.currentPoints}/{user.nextLevelPoints} XP</span>
-            </div>
-            <div className="w-full bg-white rounded-full h-3 shadow-inner">
-              <div 
-                className="bg-linear-to-r from-pink-500 to-rose-600 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${levelProgress}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-600 text-center mt-2">
-              Plus que {user.nextLevelPoints - user.currentPoints} XP pour le niveau {user.level + 1}
-            </p>
-          </div>
+          <LevelProgressBar
+            level={currentLevel}
+            currentXp={currentXp}
+            nextLevelXp={xpForNextLevel}
+            progress={levelProgress}
+            xpNeeded={xpNeeded}
+            badgeIcon={levelBadge?.icon}
+            badgeTitle={levelBadge?.title}
+          />
 
           {/* Boutons d'action */}
           <div className="grid grid-cols-2 gap-3">

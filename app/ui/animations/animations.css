@@ -1,0 +1,474 @@
+/* ========================================
+   🎬 SYSTÈME D'ANIMATIONS - HABIT TRACKER
+   ======================================== */
+
+/* ===== ANIMATIONS DE VALIDATION ===== */
+
+/* Animation de validation de défi - Checkmark qui apparaît */
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Animation de pulse pour validation réussie */
+@keyframes successPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+}
+
+/* Animation de confetti qui tombe */
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Animation de carte qui se retourne */
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* ===== ANIMATIONS D'ÉTOILES ===== */
+
+/* Étoile qui apparaît avec éclat */
+@keyframes starBurst {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.3) rotate(180deg);
+    opacity: 1;
+    filter: brightness(2);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+/* Étoile qui scintille */
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+}
+
+/* Animation de collecte d'étoile */
+@keyframes collectStar {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) scale(1.5) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Trainée d'étoile */
+@keyframes starTrail {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  50% {
+    width: 100px;
+    opacity: 1;
+  }
+  100% {
+    width: 0;
+    opacity: 0;
+  }
+}
+
+/* ===== ANIMATIONS DE NIVEAU ===== */
+
+/* Animation de passage de niveau - Badge qui grossit */
+@keyframes levelUp {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(20deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.9) rotate(-10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Animation de barre d'XP qui se remplit */
+@keyframes xpFill {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--xp-width);
+  }
+}
+
+/* Animation de pulse pour niveau supérieur */
+@keyframes levelPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px 10px rgba(234, 179, 8, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
+  }
+}
+
+/* Animation de nombre qui monte */
+@keyframes numberCount {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Rayons de lumière pour passage de niveau */
+@keyframes lightRays {
+  0% {
+    transform: rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(360deg) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ===== ANIMATIONS DE RÉCOMPENSES ===== */
+
+/* Animation de récompense qui tombe du ciel */
+@keyframes rewardDrop {
+  0% {
+    transform: translateY(-200px) scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(20px) scale(1.1);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation de pièce qui tourne */
+@keyframes coinFlip {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Animation de trophée qui brille */
+@keyframes trophyShine {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 0 rgba(234, 179, 8, 0));
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 20px rgba(234, 179, 8, 0.8));
+  }
+}
+
+/* ===== ANIMATIONS D'INTERFACE ===== */
+
+/* Animation de slide depuis le bas */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Animation de slide depuis le haut */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Animation de fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animation de scale in */
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation de bounce */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+/* Animation de shake (pour erreur) */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+/* Animation de notification qui apparaît */
+@keyframes notificationSlide {
+  0% {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ===== CLASSES UTILITAIRES ===== */
+
+.animate-checkmark {
+  animation: checkmarkPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-success-pulse {
+  animation: successPulse 0.6s ease-out;
+}
+
+.animate-confetti {
+  animation: confettiFall 3s ease-out forwards;
+}
+
+.animate-card-flip {
+  animation: cardFlip 0.6s ease-in-out;
+}
+
+.animate-star-burst {
+  animation: starBurst 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-star-twinkle {
+  animation: starTwinkle 1.5s ease-in-out infinite;
+}
+
+.animate-collect-star {
+  animation: collectStar 1s ease-out forwards;
+}
+
+.animate-level-up {
+  animation: levelUp 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-xp-fill {
+  animation: xpFill 1.5s ease-out forwards;
+}
+
+.animate-level-pulse {
+  animation: levelPulse 1s ease-out;
+}
+
+.animate-number-count {
+  animation: numberCount 0.5s ease-out;
+}
+
+.animate-light-rays {
+  animation: lightRays 2s ease-out;
+}
+
+.animate-reward-drop {
+  animation: rewardDrop 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-coin-flip {
+  animation: coinFlip 1s ease-in-out infinite;
+}
+
+.animate-trophy-shine {
+  animation: trophyShine 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-notification {
+  animation: notificationSlide 0.5s ease-out;
+}
+
+/* ===== ANIMATIONS AU HOVER ===== */
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-grow {
+  transition: transform 0.3s ease;
+}
+
+.hover-grow:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.5);
+}
+
+/* ===== ANIMATIONS DE STAGGER (pour listes) ===== */
+
+.stagger-children > * {
+  animation: fadeIn 0.5s ease-out backwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-children > *:nth-child(10) { animation-delay: 0.5s; }
+
+/* ===== ANIMATIONS AVEC DÉLAI ===== */
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-1000 { animation-delay: 1s; }
+
+/* ===== DURÉES PERSONNALISÉES ===== */
+
+.duration-fast { animation-duration: 0.3s; }
+.duration-normal { animation-duration: 0.5s; }
+.duration-slow { animation-duration: 1s; }
+.duration-slower { animation-duration: 2s; }
