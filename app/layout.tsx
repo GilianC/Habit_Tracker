@@ -1,10 +1,6 @@
 import '@/app/ui/global.css';
 import { inter } from '@/app/ui/fonts';
 import { Metadata } from 'next';
-import { ThemeProvider } from '@/app/context/ThemeContext';
-import { auth } from '@/auth';
-import { sql } from '@vercel/postgres';
-import { Theme } from '@/app/lib/themes';
  
 export const metadata: Metadata = {
   title: {
@@ -20,29 +16,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Récupérer le thème de l'utilisateur connecté
-  const session = await auth();
-  let userTheme: Theme = 'light';
-  
-  if (session?.user?.email) {
-    try {
-      const result = await sql`
-        SELECT theme FROM users WHERE email = ${session.user.email}
-      `;
-      if (result.rows.length > 0) {
-        userTheme = result.rows[0].theme as Theme;
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération du thème:', error);
-    }
-  }
-
   return (
-    <html lang="en" className={`theme-${userTheme}`}>
-      <body className={`${inter.className} antialiased theme-${userTheme}`}>
-        <ThemeProvider initialTheme={userTheme}>
-          {children}
-        </ThemeProvider>
+    <html lang="en">
+      <body className={`${inter.className} antialiased`}>
+        {children}
       </body>
     </html>
   );

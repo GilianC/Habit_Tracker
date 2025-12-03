@@ -589,6 +589,71 @@ export async function updateUserTheme(theme: string) {
   }
 }
 
+// Changer le nom de l'utilisateur
+export async function updateUserName(name: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    // Validation
+    if (!name || name.trim().length < 2) {
+      throw new Error('Le nom doit contenir au moins 2 caractères');
+    }
+
+    if (name.length > 50) {
+      throw new Error('Le nom ne peut pas dépasser 50 caractères');
+    }
+
+    await sql`
+      UPDATE users
+      SET name = ${name.trim()}
+      WHERE email = ${session.user.email}
+    `;
+
+    console.log(`👤 Nom changé: ${name}`);
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/settings');
+    revalidatePath('/dashboard/profile');
+    
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Erreur lors du changement de nom:', error);
+    throw error;
+  }
+}
+
+// Changer le fuseau horaire de l'utilisateur
+export async function updateUserTimezone(timezone: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error('Non connecté');
+    }
+
+    // Validation basique
+    if (!timezone || !timezone.includes('/')) {
+      throw new Error('Fuseau horaire invalide');
+    }
+
+    await sql`
+      UPDATE users
+      SET timezone = ${timezone}
+      WHERE email = ${session.user.email}
+    `;
+
+    console.log(`🌍 Fuseau horaire changé: ${timezone}`);
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/settings');
+    
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Erreur lors du changement de fuseau horaire:', error);
+    throw error;
+  }
+}
+
 // ==================== CUSTOM CHALLENGES (Niveau 5+) ====================
 
 export async function createCustomChallenge(

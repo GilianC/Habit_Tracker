@@ -1,9 +1,8 @@
 import { lusitana } from '@/app/ui/fonts';
-import { Cog6ToothIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import { fetchUserLevelInfo } from '@/app/lib/data';
-import ThemeSelector from '@/app/ui/settings/theme-selector';
+import AccountSettings from '@/app/ui/settings/account-settings';
 import postgres from 'postgres';
 import Link from 'next/link';
 
@@ -17,9 +16,14 @@ export default async function SettingsPage() {
   }
 
   // Récupérer les infos utilisateur
-  const userInfo = await fetchUserLevelInfo(session.user.email);
-  const themeResult = await sql`SELECT theme FROM users WHERE email = ${session.user.email}`;
-  const currentTheme = ((themeResult[0]?.theme as string) || 'light') as 'light' | 'dark' | 'sunset' | 'ocean' | 'forest';
+  const userResult = await sql`
+    SELECT theme, name, timezone 
+    FROM users 
+    WHERE email = ${session.user.email}
+  `;
+  const userData = userResult[0];
+  const userName = (userData?.name as string) || session.user.name || '';
+  const userTimezone = (userData?.timezone as string) || 'Europe/Paris';
 
   return (
     <main className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
@@ -52,41 +56,11 @@ export default async function SettingsPage() {
               </h2>
             </div>
             
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Nom d&apos;affichage
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Votre nom"
-                  disabled
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Adresse email
-                </label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  placeholder="votre@email.com"
-                  disabled
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Fuseau horaire
-                </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" disabled>
-                  <option>Europe/Paris (UTC+1)</option>
-                </select>
-              </div>
-              <button className="w-full py-3 bg-linear-to-r from-gray-300 to-gray-400 text-gray-600 rounded-xl cursor-not-allowed font-semibold">
-                Sauvegarder (bientôt disponible)
-              </button>
-            </div>
+            <AccountSettings 
+              userName={userName}
+              userEmail={session.user.email}
+              userTimezone={userTimezone}
+            />
           </div>
 
           {/* Paramètres de notification */}
@@ -139,8 +113,8 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          {/* Paramètres d'apparence */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
+          {/* Paramètres d'apparence - DÉSACTIVÉ */}
+          {/* <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">🎨</span>
@@ -151,7 +125,7 @@ export default async function SettingsPage() {
             </div>
             
             <ThemeSelector currentTheme={currentTheme} userLevel={userInfo.level} />
-          </div>
+          </div> */}
 
           {/* Paramètres de confidentialité */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">

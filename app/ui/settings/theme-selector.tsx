@@ -25,14 +25,7 @@ export default function ThemeSelector({ currentTheme, userLevel }: ThemeSelector
       await updateUserTheme(theme);
       setSelectedTheme(theme);
       
-      // Appliquer immédiatement les couleurs
-      const colors = THEMES[theme].colors;
-      document.documentElement.style.setProperty('--color-background', colors.background);
-      document.documentElement.style.setProperty('--color-surface', colors.surface);
-      document.documentElement.style.setProperty('--color-text', colors.text);
-      document.documentElement.style.setProperty('--color-primary', colors.primary);
-      
-      // Recharger la page pour appliquer partout
+      // Recharger la page pour appliquer le nouveau thème
       window.location.reload();
     } catch (error) {
       console.error('Erreur changement thème:', error);

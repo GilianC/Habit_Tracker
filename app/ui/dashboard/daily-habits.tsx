@@ -1,7 +1,7 @@
 import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
 
-// Pour l'instant, données statiques. Plus tard, on récupérera depuis la DB
+
 const mockHabits = [
   { id: '1', name: 'Boire 2L d\'eau', completed: false, icon: '💧' },
   { id: '2', name: 'Faire 30min d\'exercice', completed: true, icon: '🏃‍♂️' },

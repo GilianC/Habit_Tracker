@@ -226,14 +226,14 @@ export default function CreateActivityForm() {
                 key={`${icon}-${index}`}
                 type="button"
                 onClick={() => setFormData({...formData, icon})}
-                className={`p-2 text-2xl border rounded-md transition-colors ${
+                className={`p-3 text-2xl border rounded-md transition-colors flex items-center justify-center aspect-square ${
                   formData.icon === icon 
                     ? 'border-pink-500 bg-pink-50' 
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
                 aria-label={`Sélectionner l'icône ${icon}`}
               >
-                {icon}
+                <span className="leading-none">{icon}</span>
               </button>
             ))}
           </div>

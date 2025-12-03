@@ -264,6 +264,7 @@ export async function fetchUserActivitiesWithTodayStatus(userEmail: string): Pro
         a.frequency,
         a.color,
         a.icon,
+        a.image_url,
         a.created_at,
         al.is_done as completed_today,
         (

@@ -3,6 +3,7 @@ import { PlusIcon, CheckCircleIcon, ClockIcon, HomeIcon, ChartBarIcon, TrophyIco
 import { auth } from '@/auth';
 import { fetchUserActivitiesWithTodayStatus } from '@/app/lib/data';
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 
 export default async function ActivitiesPage() {
   // Récupérer la session
@@ -64,12 +65,30 @@ export default async function ActivitiesPage() {
               }`}
             >
               <div className="flex items-center gap-4">
-                {/* Icône de l'activité */}
+                {/* Icône ou Image de l'activité */}
                 <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg shrink-0"
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg shrink-0 overflow-hidden relative"
                   style={{ backgroundColor: activity.color }}
                 >
-                  {activity.icon}
+                  {activity.image_url ? (
+                    activity.image_url.startsWith('data:') ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={activity.image_url}
+                        alt={activity.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={activity.image_url}
+                        alt={activity.name}
+                        fill
+                        className="object-cover"
+                      />
+                    )
+                  ) : (
+                    <span>{activity.icon}</span>
+                  )}
                 </div>
 
                 {/* Informations */}

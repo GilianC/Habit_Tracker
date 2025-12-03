@@ -21,6 +21,7 @@ model User {
   level         Int       @default(1)
   xp            Int       @default(0)
   theme         String    @default("light")
+  timezone      String    @default("Europe/Paris")
   createdAt     DateTime  @default(now()) @map("created_at")
   lastLogin     DateTime  @default(now()) @map("last_login")
 
@@ -37,6 +38,7 @@ model User {
   dailyChallenges   DailyChallenge[] @relation("DailyChallenges")
   userChallenges    UserChallenge[] @relation("UserChallenges")
   customChallenges  CustomChallenge[] @relation("CustomChallenges")
+  notifications     Notification[]
 
   @@map("users")
 }
@@ -142,12 +144,14 @@ model Event {
   description String?
   startDate   DateTime @map("start_date") @db.Date
   endDate     DateTime @map("end_date") @db.Date
+  isActive    Boolean  @default(true) @map("is_active")
   createdBy   Int?     @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
 
   // Relations
-  creator    User?       @relation("EventCreator", fields: [createdBy], references: [id])
-  userEvents UserEvent[]
+  creator         User?            @relation("EventCreator", fields: [createdBy], references: [id])
+  userEvents      UserEvent[]
+  eventChallenges EventChallenge[]
 
   @@map("events")
 }
@@ -277,5 +281,44 @@ model CustomChallenge {
   @@index([userId])
   @@index([isCompleted])
   @@map("custom_challenges")
+}
+
+// Table des notifications
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  type      String   // "activity_late", "event_started", "challenge_completed", etc.
+  title     String
+  message   String
+  link      String?  // Lien vers la page concernée
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// Table des défis d'événements
+model EventChallenge {
+  id          Int      @id @default(autoincrement())
+  eventId     Int      @map("event_id")
+  title       String
+  description String?
+  targetValue Int      @map("target_value") @default(1)
+  unit        String   @default("fois")
+  starReward  Int      @default(15) @map("star_reward")
+  icon        String   @default("🎯")
+  color       String   @default("#EC4899")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_challenges")
 }
 

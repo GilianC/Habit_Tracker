@@ -99,6 +99,7 @@ export type Activity = {
   streak?: number;
   category?: string;
   start_date?: string;
+  image_url?: string;
 };
 
 export type Challenge = {
