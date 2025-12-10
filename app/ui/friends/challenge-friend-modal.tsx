@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { challengeFriend } from '@/app/lib/friend-actions';
+import { challengeFriend } from '@/app/lib/friend-challenge-actions';
 
 interface Friend {
   id: number;

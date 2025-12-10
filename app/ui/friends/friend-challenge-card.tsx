@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { acceptFriendChallenge, declineFriendChallenge } from '@/app/lib/friend-actions';
+import { acceptFriendChallenge, declineFriendChallenge } from '@/app/lib/friend-challenge-actions';
 import { useRouter } from 'next/navigation';
 import ChallengeAcceptedModal from './challenge-accepted-modal';
 

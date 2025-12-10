@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { PlusIcon, CheckCircleIcon, ClockIcon, HomeIcon, ChartBarIcon, TrophyIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { auth } from '@/auth';
 import { fetchUserActivitiesWithTodayStatus } from '@/app/lib/data';
-import { getActiveFriendChallenges } from '@/app/lib/friend-actions';
+import { getActiveFriendChallenges } from '@/app/lib/friend-challenge-actions';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import FriendChallengeActivityCard from '@/app/ui/activities/friend-challenge-activity-card';

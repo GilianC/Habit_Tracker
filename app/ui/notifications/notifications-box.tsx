@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getUserNotifications, markNotificationAsRead } from '@/app/lib/notification-actions';
-import { getFriendChallengeById } from '@/app/lib/friend-actions';
+import { getFriendChallengeById } from '@/app/lib/friend-challenge-actions';
 import ChallengeDetailModal from '@/app/ui/friends/challenge-detail-modal';
 
 interface Notification {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { acceptFriendChallenge, declineFriendChallenge } from '@/app/lib/friend-actions';
+import { acceptFriendChallenge, declineFriendChallenge } from '@/app/lib/friend-challenge-actions';
 import ChallengeAcceptedModal from './challenge-accepted-modal';
 
 interface ChallengeDetailModalProps {

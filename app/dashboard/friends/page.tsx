@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import { getPendingFriendRequests, getPendingFriendChallenges } from '@/app/lib/friend-actions';
+import { getPendingFriendRequests } from '@/app/lib/friend-actions';
+import { getPendingFriendChallenges } from '@/app/lib/friend-challenge-actions';
 import FriendRequestCard from '@/app/ui/friends/friend-request-card';
 import FriendChallengeCard from '@/app/ui/friends/friend-challenge-card';
 import Link from 'next/link';

@@ -369,6 +369,8 @@ model FriendChallenge {
   endDate       DateTime? @map("end_date") @db.Date
   challengerProgress Int  @default(0) @map("challenger_progress")
   challengedProgress Int  @default(0) @map("challenged_progress")
+  lastValidationChallenger DateTime? @map("last_validation_challenger")
+  lastValidationChallenged DateTime? @map("last_validation_challenged")
   winnerId      Int?      @map("winner_id")
   createdAt     DateTime  @default(now()) @map("created_at")
 

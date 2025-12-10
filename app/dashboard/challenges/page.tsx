@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { fetchUserStars, fetchTodayDailyChallenges } from '@/app/lib/data';
-import { getActiveFriendChallenges } from '@/app/lib/friend-actions';
+import { getActiveFriendChallenges } from '@/app/lib/friend-challenge-actions';
 import { StarIcon, HomeIcon, ChartBarIcon, TrophyIcon, UserCircleIcon } from '@heroicons/react/24/solid';
 import DailyChallengesCard from '@/app/ui/challenges/daily-challenges-card';
 import ActiveFriendChallengeCard from '@/app/ui/friends/active-friend-challenge-card';

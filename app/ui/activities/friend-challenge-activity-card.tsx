@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { recordFriendChallengeProgress } from '@/app/lib/friend-actions';
+import { recordFriendChallengeProgress } from '@/app/lib/friend-challenge-actions';
 
 interface FriendChallengeActivityCardProps {
   challenge: {

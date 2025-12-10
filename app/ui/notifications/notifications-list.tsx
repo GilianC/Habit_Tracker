@@ -7,7 +7,7 @@ import {
   markAllNotificationsAsRead,
   deleteNotification,
 } from '@/app/lib/notification-actions';
-import { getFriendChallengeById } from '@/app/lib/friend-actions';
+import { getFriendChallengeById } from '@/app/lib/friend-challenge-actions';
 import ChallengeDetailModal from '@/app/ui/friends/challenge-detail-modal';
 import { useRouter } from 'next/navigation';
 
