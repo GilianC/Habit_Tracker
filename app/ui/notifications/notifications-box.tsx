@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getUserNotifications, markNotificationAsRead } from '@/app/lib/notification-actions';
+import { getFriendChallengeById } from '@/app/lib/friend-actions';
+import ChallengeDetailModal from '@/app/ui/friends/challenge-detail-modal';
 
 interface Notification {
   id: number;
@@ -17,6 +19,9 @@ interface Notification {
 export default function NotificationsBox() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processingAction, setProcessingAction] = useState<number | null>(null);
+  const [selectedChallenge, setSelectedChallenge] = useState<any>(null);
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
 
   useEffect(() => {
     loadNotifications();
@@ -39,6 +44,62 @@ export default function NotificationsBox() {
     }
   };
 
+  const handleNotificationClick = async (notification: Notification) => {
+    try {
+      console.log('🔍 Clic sur notification:', notification);
+      
+      // Marquer comme lu
+      if (!notification.isRead) {
+        await handleMarkAsRead(notification.id);
+      }
+
+      // Si c'est un défi d'ami, ouvrir la modal
+      if (notification.type === 'friend_challenge' && notification.link) {
+        console.log('📧 Lien de notification:', notification.link);
+        
+        // Extraire l'ID du challenge depuis l'URL
+        let challengeId: string | null = null;
+        
+        try {
+          const url = new URL(notification.link, window.location.origin);
+          challengeId = url.searchParams.get('challenge');
+        } catch (urlError) {
+          // Si le lien n'est pas une URL valide, essayer d'extraire l'ID directement
+          const match = notification.link.match(/challenge[=\/](\d+)/);
+          challengeId = match ? match[1] : null;
+        }
+        
+        console.log('🆔 Challenge ID extrait:', challengeId);
+        
+        if (challengeId) {
+          const result = await getFriendChallengeById(parseInt(challengeId));
+          console.log('📦 Résultat getFriendChallengeById:', result);
+          
+          if (result.success && result.challenge) {
+            setSelectedChallenge(result.challenge);
+            setShowChallengeModal(true);
+            console.log('✅ Modal ouverte avec challenge:', result.challenge);
+          } else {
+            console.error('❌ Erreur lors de la récupération du défi:', result.error);
+            alert(`Erreur: ${result.error || 'Impossible de charger le défi'}`);
+          }
+        } else {
+          console.error('❌ Aucun ID de challenge trouvé dans l&apos;URL');
+          alert('Le lien du défi est invalide. Veuillez aller dans la page Amis pour voir vos défis.');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Erreur dans handleNotificationClick:', error);
+      alert('Erreur lors de l&apos;ouverture du défi');
+    }
+  };
+
+  const handleCloseChallengeModal = () => {
+    setShowChallengeModal(false);
+    setSelectedChallenge(null);
+    loadNotifications(); // Recharger les notifications
+  };
+
   const getNotificationIcon = (type: string) => {
     const icons: Record<string, string> = {
       activity_late: '⏰',
@@ -47,6 +108,12 @@ export default function NotificationsBox() {
       challenge_completed: '🏆',
       badge_earned: '🏅',
       level_up: '⬆️',
+      friend_request: '👋',
+      friend_request_accepted: '🤝',
+      friend_request_declined: '😢',
+      friend_challenge: '⚔️',
+      friend_challenge_accepted: '🎯',
+      friend_challenge_completed: '🏆',
     };
     return icons[type] || '🔔';
   };
@@ -158,17 +225,28 @@ export default function NotificationsBox() {
                       </button>
                     )}
                     {notification.link && (
-                      <Link
-                        href={notification.link}
-                        onClick={() => {
-                          if (!notification.isRead) {
-                            handleMarkAsRead(notification.id);
-                          }
-                        }}
-                        className="text-xs text-pink-600 hover:text-pink-700 font-medium"
-                      >
-                        Voir →
-                      </Link>
+                      <>
+                        {notification.type === 'friend_challenge' ? (
+                          <button
+                            onClick={() => handleNotificationClick(notification)}
+                            className="text-xs text-pink-600 hover:text-pink-700 font-medium"
+                          >
+                            Voir →
+                          </button>
+                        ) : (
+                          <Link
+                            href={notification.link}
+                            onClick={() => {
+                              if (!notification.isRead) {
+                                handleMarkAsRead(notification.id);
+                              }
+                            }}
+                            className="text-xs text-pink-600 hover:text-pink-700 font-medium"
+                          >
+                            Voir →
+                          </Link>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -185,6 +263,14 @@ export default function NotificationsBox() {
       >
         Voir toutes les notifications
       </Link>
+
+      {/* Modal de détail du défi */}
+      {showChallengeModal && selectedChallenge && (
+        <ChallengeDetailModal
+          challenge={selectedChallenge}
+          onClose={handleCloseChallengeModal}
+        />
+      )}
     </div>
   );
 }

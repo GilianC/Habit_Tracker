@@ -1,5 +1,5 @@
 import { lusitana } from '@/app/ui/fonts';
-import { ArrowLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import AccountSettings from '@/app/ui/settings/account-settings';
@@ -44,7 +44,7 @@ export default async function SettingsPage() {
           <p className="text-gray-600 text-lg">Personnalisez votre expérience HabitFlow</p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="max-w-2xl">
           {/* Paramètres du compte */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
@@ -61,124 +61,6 @@ export default async function SettingsPage() {
               userEmail={session.user.email}
               userTimezone={userTimezone}
             />
-          </div>
-
-          {/* Paramètres de notification */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-linear-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">🔔</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Notifications
-              </h2>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                <div>
-                  <span className="font-semibold text-gray-900">Rappels quotidiens</span>
-                  <p className="text-sm text-gray-600">Recevez un rappel pour vos habitudes</p>
-                </div>
-                <div className="relative">
-                  <input type="checkbox" disabled className="sr-only" />
-                  <div className="w-12 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                <div>
-                  <span className="font-semibold text-gray-900">Notifications de défis</span>
-                  <p className="text-sm text-gray-600">Alertes pour les défis entre amis</p>
-                </div>
-                <div className="relative">
-                  <input type="checkbox" disabled className="sr-only" />
-                  <div className="w-12 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                <div>
-                  <span className="font-semibold text-gray-900">Rapports hebdomadaires</span>
-                  <p className="text-sm text-gray-600">Résumé de vos performances</p>
-                </div>
-                <div className="relative">
-                  <input type="checkbox" disabled className="sr-only" />
-                  <div className="w-12 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Paramètres d'apparence - DÉSACTIVÉ */}
-          {/* <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">🎨</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Apparence
-              </h2>
-            </div>
-            
-            <ThemeSelector currentTheme={currentTheme} userLevel={userInfo.level} />
-          </div> */}
-
-          {/* Paramètres de confidentialité */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-linear-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">🔒</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Confidentialité
-              </h2>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                <div>
-                  <span className="font-semibold text-gray-900">Profil public</span>
-                  <p className="text-sm text-gray-600">Permettre aux autres de voir vos statistiques</p>
-                </div>
-                <div className="relative">
-                  <input type="checkbox" disabled className="sr-only" />
-                  <div className="w-12 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                <div>
-                  <span className="font-semibold text-gray-900">Partage de données</span>
-                  <p className="text-sm text-gray-600">Aider à améliorer l&apos;application</p>
-                </div>
-                <div className="relative">
-                  <input type="checkbox" disabled className="sr-only" />
-                  <div className="w-12 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Message informatif */}
-        <div className="mt-8 bg-linear-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-6 shadow-lg">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-linear-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shrink-0">
-              <Cog6ToothIcon className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="font-bold text-yellow-800 mb-2">Paramètres en développement</h3>
-              <p className="text-yellow-700">
-                Les paramètres avancés, la personnalisation complète et la synchronisation 
-                seront disponibles dans les prochaines versions de HabitFlow.
-              </p>
-            </div>
           </div>
         </div>
       </div>

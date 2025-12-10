@@ -1,9 +1,12 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { fetchUserStars, fetchTodayDailyChallenges } from '@/app/lib/data';
+import { getActiveFriendChallenges } from '@/app/lib/friend-actions';
 import { StarIcon, HomeIcon, ChartBarIcon, TrophyIcon, UserCircleIcon } from '@heroicons/react/24/solid';
 import DailyChallengesCard from '@/app/ui/challenges/daily-challenges-card';
+import ActiveFriendChallengeCard from '@/app/ui/friends/active-friend-challenge-card';
 import Link from 'next/link';
+import prisma from '@/app/lib/prisma';
 
 export default async function ChallengesPage() {
   const session = await auth();
@@ -12,10 +15,30 @@ export default async function ChallengesPage() {
     redirect('/login');
   }
 
-  const [userStars, dailyChallenges] = await Promise.all([
+  // Récupérer l'utilisateur actuel
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!currentUser) {
+    redirect('/login');
+  }
+
+  const [userStars, dailyChallenges, friendChallengesResult] = await Promise.all([
     fetchUserStars(session.user.email),
-    fetchTodayDailyChallenges(session.user.email)
+    fetchTodayDailyChallenges(session.user.email),
+    getActiveFriendChallenges(),
   ]);
+
+  const friendChallenges = friendChallengesResult.success ? friendChallengesResult.challenges || [] : [];
+  
+  // Debug: Afficher le nombre de défis
+  console.log('🔍 Défis avec amis:', {
+    success: friendChallengesResult.success,
+    count: friendChallenges.length,
+    challenges: friendChallenges,
+  });
 
   return (
     <div className="pb-20">
@@ -39,6 +62,44 @@ export default async function ChallengesPage() {
 
         {/* Défis journaliers */}
         <DailyChallengesCard challenges={dailyChallenges} />
+
+        {/* Défis avec amis */}
+        {friendChallenges.length > 0 ? (
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">⚔️</span>
+              <h2 className="text-2xl font-bold text-gray-800">Défis avec amis</h2>
+              <span className="px-2 py-1 bg-pink-100 text-pink-600 text-sm font-bold rounded-full">
+                {friendChallenges.length}
+              </span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {friendChallenges.map((challenge: any) => (
+                <ActiveFriendChallengeCard
+                  key={challenge.id}
+                  challenge={challenge}
+                  currentUserId={currentUser.id}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 bg-white rounded-2xl p-8 text-center border-2 border-dashed border-gray-200">
+            <div className="text-6xl mb-3">⚔️</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              Aucun défi avec amis en cours
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Défiez vos amis pour rendre vos habitudes plus motivantes !
+            </p>
+            <Link
+              href="/dashboard/home"
+              className="inline-block px-6 py-3 bg-linear-to-r from-pink-500 to-rose-600 text-white font-medium rounded-xl hover:shadow-lg transition-all"
+            >
+              Voir mes amis
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Navigation du bas */}

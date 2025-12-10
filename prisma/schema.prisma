@@ -39,6 +39,15 @@ model User {
   userChallenges    UserChallenge[] @relation("UserChallenges")
   customChallenges  CustomChallenge[] @relation("CustomChallenges")
   notifications     Notification[]
+  
+  // Relations pour les amitiés
+  friendshipsRequested  Friendship[] @relation("FriendshipRequester")
+  friendshipsReceived   Friendship[] @relation("FriendshipAddressee")
+  
+  // Relations pour les défis entre amis
+  friendChallengesSent      FriendChallenge[] @relation("FriendChallengeChallenger")
+  friendChallengesReceived  FriendChallenge[] @relation("FriendChallengeChallenged")
+  friendChallengesWon       FriendChallenge[] @relation("FriendChallengeWinner")
 
   @@map("users")
 }
@@ -57,9 +66,10 @@ model Activity {
   createdAt DateTime  @default(now()) @map("created_at")
 
   // Relations
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activityLogs ActivityLog[]
-  challenges   Challenge[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityLogs     ActivityLog[]
+  challenges       Challenge[]
+  friendChallenges FriendChallenge[]
 
   @@index([userId])
   @@map("activities")
@@ -320,5 +330,57 @@ model EventChallenge {
 
   @@index([eventId])
   @@map("event_challenges")
+}
+
+// Table des amitiés
+model Friendship {
+  id          Int      @id @default(autoincrement())
+  requesterId Int      @map("requester_id")
+  addresseeId Int      @map("addressee_id")
+  status      String   @default("pending") // pending, accepted, declined
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([requesterId])
+  @@index([addresseeId])
+  @@index([status])
+  @@map("friendships")
+}
+
+// Table des défis entre amis
+model FriendChallenge {
+  id            Int       @id @default(autoincrement())
+  challengerId  Int       @map("challenger_id")
+  challengedId  Int       @map("challenged_id")
+  activityId    Int?      @map("activity_id")
+  eventId       Int?      @map("event_id")
+  title         String
+  description   String?
+  targetValue   Int       @map("target_value") @default(7) // Ex: 7 jours
+  unit          String    @default("jours")
+  starReward    Int       @default(20) @map("star_reward")
+  status        String    @default("pending") // pending, accepted, declined, active, completed, cancelled
+  startDate     DateTime? @map("start_date") @db.Date
+  endDate       DateTime? @map("end_date") @db.Date
+  challengerProgress Int  @default(0) @map("challenger_progress")
+  challengedProgress Int  @default(0) @map("challenged_progress")
+  winnerId      Int?      @map("winner_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  challenger User      @relation("FriendChallengeChallenger", fields: [challengerId], references: [id], onDelete: Cascade)
+  challenged User      @relation("FriendChallengeChallenged", fields: [challengedId], references: [id], onDelete: Cascade)
+  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
+  winner     User?     @relation("FriendChallengeWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+
+  @@index([challengerId])
+  @@index([challengedId])
+  @@index([status])
+  @@map("friend_challenges")
 }
 

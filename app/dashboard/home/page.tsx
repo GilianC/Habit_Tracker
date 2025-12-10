@@ -6,6 +6,7 @@ import { fetchDashboardStats, fetchUserActivitiesWithTodayStatus, fetchUserStars
 import { redirect } from 'next/navigation';
 import QuickActivityButton from './quick-activity-button';
 import NotificationsBox from '@/app/ui/notifications/notifications-box';
+import FriendsBox from '@/app/ui/friends/friends-box';
 
 export default async function HomePage() {
   // Récupérer la session
@@ -36,10 +37,10 @@ export default async function HomePage() {
   const quickActivities = activities.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-100 to-pink-200 p-4">
+    <div className="min-h-screen bg-linear-to-br from-pink-100 via-rose-100 to-pink-200 p-4">
       <div className="max-w-md mx-auto space-y-6">
         {/* En-tête avec progression */}
-        <div className="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-6 shadow-2xl text-white">
+        <div className="bg-linear-to-br from-pink-500 via-rose-500 to-pink-600 rounded-3xl p-6 shadow-2xl text-white">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-2xl">👋</span>
@@ -81,29 +82,10 @@ export default async function HomePage() {
 
         {/* Section Notifications - Composant dynamique */}
         <NotificationsBox />
-        
-        {/* Bouton Voir toutes les notifications */}
-        <Link
-          href="/dashboard/notifications"
-          className="block w-full bg-white rounded-2xl p-4 shadow-lg border border-pink-200 hover:border-pink-300 hover:shadow-xl transition-all group"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800">Voir toutes les notifications</h3>
-                <p className="text-sm text-gray-600">Gérez vos notifications</p>
-              </div>
-            </div>
-            <svg className="w-6 h-6 text-pink-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
+
+        {/* Section Amis */}
+        <FriendsBox />
+       
 
         {/* Section "Commencez votre parcours" */}
         <div className="bg-white rounded-3xl p-6 shadow-lg border-2 border-dashed border-pink-200">

@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { PlusIcon, CheckCircleIcon, ClockIcon, HomeIcon, ChartBarIcon, TrophyIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { auth } from '@/auth';
 import { fetchUserActivitiesWithTodayStatus } from '@/app/lib/data';
+import { getActiveFriendChallenges } from '@/app/lib/friend-actions';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
+import FriendChallengeActivityCard from '@/app/ui/activities/friend-challenge-activity-card';
+import prisma from '@/app/lib/prisma';
 
 export default async function ActivitiesPage() {
   // Récupérer la session
@@ -13,8 +16,23 @@ export default async function ActivitiesPage() {
     redirect('/login');
   }
 
+  // Récupérer l'utilisateur actuel
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+  
+  if (!currentUser) {
+    redirect('/login');
+  }
+
   // Récupérer les activités de l'utilisateur
   const activities = await fetchUserActivitiesWithTodayStatus(session.user.email);
+
+  // Récupérer les défis actifs avec amis qui ont une activité
+  const friendChallengesResult = await getActiveFriendChallenges();
+  const friendChallengesWithActivity = friendChallengesResult.success && friendChallengesResult.challenges
+    ? friendChallengesResult.challenges.filter((challenge: any) => challenge.activity !== null)
+    : [];
 
   const completedCount = activities.filter((a) => a.completed_today).length;
   const totalCount = activities.length;
@@ -127,6 +145,31 @@ export default async function ActivitiesPage() {
             <p className="text-gray-600 mb-6">
               Commencez par créer votre première activité !
             </p>
+          </div>
+        )}
+
+        {/* Section Défis avec amis */}
+        {friendChallengesWithActivity.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">⚔️</span>
+              <h2 className="text-2xl font-bold text-gray-800">Défis avec amis</h2>
+              <span className="px-2 py-1 bg-pink-100 text-pink-600 text-sm font-bold rounded-full">
+                {friendChallengesWithActivity.length}
+              </span>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Validez vos activités de défis pour augmenter votre progression
+            </p>
+            <div className="space-y-4">
+              {friendChallengesWithActivity.map((challenge: any) => (
+                <FriendChallengeActivityCard
+                  key={challenge.id}
+                  challenge={challenge}
+                  currentUserId={currentUser.id}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>

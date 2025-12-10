@@ -11,7 +11,13 @@ export type NotificationType =
   | 'event_ending' 
   | 'challenge_completed'
   | 'badge_earned'
-  | 'level_up';
+  | 'level_up'
+  | 'friend_request'
+  | 'friend_request_accepted'
+  | 'friend_request_declined'
+  | 'friend_challenge'
+  | 'friend_challenge_accepted'
+  | 'friend_challenge_completed';
 
 interface CreateNotificationParams {
   userId: number;
